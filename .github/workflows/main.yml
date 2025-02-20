@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Updated to latest stable version
 
       - name: Set Up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Updated to latest stable version
         with:
           node-version: '18' # Adjust to your preferred Node.js version
 
@@ -31,7 +31,7 @@ jobs:
         run: npm run package
 
       - name: Upload Plugin ZIP
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: infinity-gallery
           path: dist/infinity-gallery.zip
