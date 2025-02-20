@@ -58,14 +58,18 @@ jobs:
 
       - name: Get Tag Message
         id: tag_message
-        run: echo "message=$(git tag -n99 -l ${{ github.ref_name }} | sed 's/^.* //')" >> $GITHUB_ENV
+        run: |
+         MESSAGE=$(git for-each-ref --format='%(contents)' "refs/tags/${{ github.ref_name }}")
+         echo "MESSAGE<<EOF" >> $GITHUB_ENV
+         echo "$MESSAGE" >> $GITHUB_ENV
+         echo "EOF" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Infinity Gallery ${{ github.ref_name }}
-          body: "${{ env.message || 'New release of Infinity Gallery 🎉' }}"
+          body: "${{ env.MESSAGE || 'New release of Infinity Gallery 🎉' }}"
           draft: false
           prerelease: false
           files: dist/infinity-gallery.zip
