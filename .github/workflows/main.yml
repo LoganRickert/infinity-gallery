@@ -58,7 +58,7 @@ jobs:
 
       - name: Get Tag Message
         id: tag_message
-        run: echo "message=$(git tag -l --format='%(contents)' ${{ github.ref_name }})" >> $GITHUB_ENV
+        run: echo "message=$(git tag -n99 -l ${{ github.ref_name }} | sed 's/^.* //')" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
