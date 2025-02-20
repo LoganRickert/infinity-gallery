@@ -1,0 +1,18 @@
+.infinity-gallery-editor {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.infinity-gallery-preview {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.infinity-gallery-preview img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+}
