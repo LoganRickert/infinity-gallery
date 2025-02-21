@@ -28,10 +28,14 @@ jobs:
 
       - name: Build Project
         run: npm run build
-
       - name: Get Git Tag
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=dev-build" >> $GITHUB_ENV
+          fi
 
       - name: Package Plugin with Version
         run: npm run package && mv dist/infinity-gallery.zip dist/infinity-gallery-${{ env.VERSION }}.zip
