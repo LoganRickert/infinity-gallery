@@ -84,7 +84,7 @@ function infinity_gallery_render_callback($attributes)
                     <source data-srcset="<?php echo esc_url($largeSrc); ?>" media="(min-width: 1280px)">
                     <source data-srcset="<?php echo esc_url($mediumSrc); ?>" media="(min-width: 768px)">
                     <source data-srcset="<?php echo esc_url($smallSrc); ?>" media="(max-width: 767px)">
-                    <img src="data:image/gif;base64" 
+                    <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                         alt="<?php echo esc_attr($image['alt'] ?? 'Gallery Image'); ?>"
                         class="infinity-gallery-image"
                         loading="lazy"
@@ -97,7 +97,6 @@ function infinity_gallery_render_callback($attributes)
                 <?php endif; ?>
             </figure>
         <?php endforeach; ?>
-
     </div>
     <div id="lightbox" class="lightbox" role="dialog" aria-labelledby="lightbox-title" aria-hidden="true">
         <!-- Background Overlay for Closing -->
@@ -133,7 +132,7 @@ function infinity_gallery_render_callback($attributes)
     <script>
         (function() {
             document.body.scrollTop = document.documentElement.scrollTop = 0;
-            
+
             var gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
             if (!gallery) return;
 

@@ -121,7 +121,6 @@
     font-size: 18px;
     cursor: pointer;
     z-index: 100001; /* Ensure above lightbox */
-    opacity: 0.5;
 }
 
 .lightbox button:hover, 
@@ -158,12 +157,14 @@
     left: 20px;
     top: 50%;
     transform: translateY(-50%);
+    opacity: 0.5;
 }
 
 #lightbox-next {
     right: calc(20px + 1vw);
     top: 50%;
     transform: translateY(-50%);
+    opacity: 0.5;
 }
 
 /* Bottom Buttons (Info & Download) */

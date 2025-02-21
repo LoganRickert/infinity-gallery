@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const lightboxImg = document.querySelector("#lightbox-img");
 
         lightboxImg.src = loadingGif;
+        lightboxImg.style.opacity = 0.25;
         document.querySelector("#lightbox").classList.add("open");
 
         const newImg = new Image();
@@ -28,6 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         newImg.onload = () => {
             lightboxImg.src = newImg.src; // Replace with actual image
+            lightboxImg.style.opacity = 1;
+            preloadNextImage();
         };
 
         // Make lightbox visible to assistive tech
@@ -43,8 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Extract metadata using EXIF.js
         extractExifMetadata(image.dataset.full);
-
-        preloadNextImage();
     }
 
     function extractExifMetadata(imageUrl) {
