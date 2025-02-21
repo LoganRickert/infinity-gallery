@@ -2,6 +2,8 @@ import "./styles.css";
 import debounce from 'lodash/debounce';
 
 document.addEventListener("DOMContentLoaded", function () {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+
     const galleries = document.querySelectorAll('.infinity-gallery');
 
     galleries.forEach(gallery => {

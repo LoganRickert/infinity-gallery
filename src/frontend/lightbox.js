@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let lastClickTime = 0;
 
     function openLightbox(index, gallery) {
+        console.log("Triggering Open Lightbox");
         disableScroll();
 
         currentIndex = index;
@@ -20,18 +21,23 @@ document.addEventListener("DOMContentLoaded", function () {
         const image = images[currentIndex];
         const lightboxImg = document.querySelector("#lightbox-img");
 
-        lightboxImg.src = loadingGif;
-        lightboxImg.style.opacity = 0.25;
-        document.querySelector("#lightbox").classList.add("open");
+        console.log("Src:", lightboxImg.src);
 
-        const newImg = new Image();
-        newImg.src = image.dataset.full;
-
-        newImg.onload = () => {
-            lightboxImg.src = newImg.src; // Replace with actual image
-            lightboxImg.style.opacity = 1;
-            preloadNextImage();
-        };
+        if (lightboxImg.src !== image.dataset.full) {
+            lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+            lightboxImg.style.opacity = 0.25;
+            document.querySelector("#lightbox").classList.add("open");
+    
+            const newImg = new Image();
+            newImg.src = image.dataset.full;
+    
+            newImg.onload = () => {
+                lightboxImg.src = newImg.src; // Replace with actual image
+                lightboxImg.style.opacity = 1;
+                preloadNextImage();
+                extractExifMetadata(newImg);
+            };
+        }
 
         // Make lightbox visible to assistive tech
         document.querySelector("#lightbox").removeAttribute("aria-hidden");
@@ -43,58 +49,58 @@ document.addEventListener("DOMContentLoaded", function () {
         scaleLightboxImage();
         updateLightboxButtons();
         updateURL();
-
-        // Extract metadata using EXIF.js
-        extractExifMetadata(image.dataset.full);
     }
 
-    function extractExifMetadata(imageUrl) {
-        const img = document.createElement("img");
-        img.src = imageUrl;
-
-        img.onload = () => {
-            EXIF.getData(img, function () {
-                const metadata = {};
+    function extractExifMetadata(newImg) {
+        console.log("Complete?", newImg.complete)
+        // Ensure the image has fully loaded before reading EXIF metadata
+        if (!newImg || !newImg.complete) {
+            console.warn("Image not fully loaded for EXIF extraction.");
+            return;
+        }
     
-                // Extract Camera Make & Model
-                const make = EXIF.getTag(this, "Make");
-                const model = EXIF.getTag(this, "Model");
-                if (make || model) {
-                    metadata.camera = [make, model].filter(Boolean).join(" ");
-                }
+        EXIF.getData(newImg, function () {
+            console.log("EXIF?", EXIF, this);
+            const metadata = {};
     
-                // Extract ISO
-                const iso = EXIF.getTag(this, "ISOSpeedRatings");
-                if (iso) metadata.ISO = iso;
+            // Extract Camera Make & Model
+            const make = EXIF.getTag(this, "Make");
+            const model = EXIF.getTag(this, "Model");
+            if (make || model) {
+                metadata.camera = [make, model].filter(Boolean).join(" ");
+            }
     
-                // Extract Focal Length
-                const focalLength = EXIF.getTag(this, "FocalLength");
-                if (focalLength) metadata.focal_length = `${focalLength}mm`;
+            // Extract ISO
+            const iso = EXIF.getTag(this, "ISOSpeedRatings");
+            if (iso) metadata.ISO = iso;
     
-                // Extract Aperture
-                const aperture = EXIF.getTag(this, "FNumber");
-                if (aperture) metadata.aperture = `f/${aperture}`;
+            // Extract Focal Length
+            const focalLength = EXIF.getTag(this, "FocalLength");
+            if (focalLength) metadata.focal_length = `${focalLength}mm`;
     
-                // Extract Exposure Time (Convert 0.00025 to 1/4000 sec)
-                const exposureTime = EXIF.getTag(this, "ExposureTime");
-                if (exposureTime) {
-                    metadata.exposure = formatExposureTime(exposureTime);
-                }
+            // Extract Aperture
+            const aperture = EXIF.getTag(this, "FNumber");
+            if (aperture) metadata.aperture = `f/${aperture}`;
     
-                // Extract IPTC Data (Credit & Copyright)
-                const iptcData = EXIF.getTag(this, "IPTC") || {};
-                if (iptcData["Credit"]) metadata.credit = iptcData["Credit"];
-                if (iptcData["Copyright"]) metadata.copyright = iptcData["Copyright"];
+            // Extract Exposure Time (Convert 0.00025 to 1/4000 sec)
+            const exposureTime = EXIF.getTag(this, "ExposureTime");
+            if (exposureTime) {
+                metadata.exposure = formatExposureTime(exposureTime);
+            }
     
-                // Extract and Convert DateTime to Local Timezone
-                const dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
-                if (dateTimeOriginal) {
-                    metadata.dateTime = formatDateTime(dateTimeOriginal);
-                }
-
-                displayMetadata(metadata);
-            });
-        };
+            // Extract IPTC Data (Credit & Copyright)
+            const iptcData = EXIF.getTag(this, "IPTC") || {};
+            if (iptcData["Credit"]) metadata.credit = iptcData["Credit"];
+            if (iptcData["Copyright"]) metadata.copyright = iptcData["Copyright"];
+    
+            // Extract and Convert DateTime to Local Timezone
+            const dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
+            if (dateTimeOriginal) {
+                metadata.dateTime = formatDateTime(dateTimeOriginal);
+            }
+    
+            displayMetadata(metadata);
+        });
     }
 
     // Convert Exposure Time to Proper Fraction (e.g., 1/3000 sec)
@@ -166,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         history.pushState({}, "", window.location.href.split("#")[0]); // Remove hash
         enableScroll();
+        document.querySelector("#lightbox-flip").classList.remove("flipped");
     }
 
     function nextImage() {

@@ -73,7 +73,6 @@ function infinity_gallery_render_callback($attributes)
             // Ensure correct size selection
             $smallSrc = isset($image['sizes']['medium']['url']) ? $image['sizes']['medium']['url'] : $image['url'];
             $mediumSrc = isset($image['sizes']['large']['url']) ? $image['sizes']['large']['url'] : $image['url'];
-            $largeSrc = isset($image['sizes']['1536x1536']['url']) ? $image['sizes']['1536x1536']['url'] : $image['url'];
             $fullSrc = isset($image['sizes']['full']['url']) ? $image['sizes']['full']['url'] : $image['url'];
 
             // Unique image ID
@@ -81,7 +80,7 @@ function infinity_gallery_render_callback($attributes)
         ?>
             <figure class="infinity-gallery-item">
                 <picture>
-                    <source data-srcset="<?php echo esc_url($largeSrc); ?>" media="(min-width: 1280px)">
+                    <source data-srcset="<?php echo esc_url($mediumSrc); ?>" media="(min-width: 1280px)">
                     <source data-srcset="<?php echo esc_url($mediumSrc); ?>" media="(min-width: 768px)">
                     <source data-srcset="<?php echo esc_url($smallSrc); ?>" media="(max-width: 767px)">
                     <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
@@ -112,7 +111,7 @@ function infinity_gallery_render_callback($attributes)
         <!-- Lightbox Content -->
         <div class="lightbox-content">
             <div id="lightbox-flip" class="lightbox-flip">
-                <img id="lightbox-img" src="/wp-content/plugins/infinity-gallery/assets/loading.gif" alt="Lightbox Image">
+                <img id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Lightbox Image">
                 <div id="lightbox-meta" class="lightbox-meta">
                     <p id="meta-info"></p>
                 </div>
