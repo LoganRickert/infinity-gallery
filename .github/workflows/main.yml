@@ -80,6 +80,6 @@ jobs:
           body: "${{ env.MESSAGE || 'New release of Infinity Gallery 🎉' }}"
           draft: false
           prerelease: false
-          files: dist/infinity-gallery.zip
+          files: dist/infinity-gallery-${{ env.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
