@@ -29,14 +29,18 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Package Plugin
-        run: npm run package
+      - name: Get Git Tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Package Plugin with Version
+        run: npm run package && mv dist/infinity-gallery.zip dist/infinity-gallery-${{ env.VERSION }}.zip
 
       - name: Upload Plugin ZIP as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: infinity-gallery
-          path: dist/infinity-gallery.zip
+          name: infinity-gallery-${{ env.VERSION }}
+          path: dist/infinity-gallery-${{ env.VERSION }}.zip
 
   release:
     needs: build
