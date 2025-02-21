@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "main": "index.js",
   "scripts": {
+    "prebuild": "node update-version.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "wp-scripts build src/index.js src/frontend/gallery.js src/frontend/lightbox.js --webpack-config=webpack.config.js",
     "package": "node package-plugin.js"
