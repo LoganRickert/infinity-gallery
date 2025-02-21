@@ -27,6 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
             lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             lightboxImg.style.opacity = 0.25;
             document.querySelector("#lightbox").classList.add("open");
+            
+            const viewportWidth = window.innerWidth * 0.9; // 90% of viewport width
+            const viewportHeight = window.innerHeight * 0.9; // 90% of viewport height
     
             const newImg = new Image();
             newImg.src = image.dataset.full;
@@ -34,6 +37,17 @@ document.addEventListener("DOMContentLoaded", function () {
             newImg.onload = () => {
                 lightboxImg.src = newImg.src; // Replace with actual image
                 lightboxImg.style.opacity = 1;
+
+                const imgWidth = newImg.width;
+                const imgHeight = newImg.height;
+    
+                const widthRatio = viewportWidth / imgWidth;
+                const heightRatio = viewportHeight / imgHeight;
+                const scaleFactor = Math.min(widthRatio, heightRatio); // Choose the smallest factor to fit
+    
+                lightboxImg.style.width = `${imgWidth * scaleFactor}px`;
+                lightboxImg.style.height = `${imgHeight * scaleFactor}px`;
+
                 preloadNextImage();
                 extractExifMetadata(newImg);
             };
@@ -46,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const metaText = `Loading Metadata...`;
         document.querySelector("#meta-info").innerHTML = metaText;
 
-        scaleLightboxImage();
         updateLightboxButtons();
         updateURL();
     }
@@ -249,19 +262,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const viewportWidth = window.innerWidth * 0.9; // 90% of viewport width
         const viewportHeight = window.innerHeight * 0.9; // 90% of viewport height
 
-        const img = new Image();
-        img.src = lightboxImg.src;
-        img.onload = function () {
-            const imgWidth = img.width;
-            const imgHeight = img.height;
+        const imgWidth = img.width;
+        const imgHeight = img.height;
 
-            const widthRatio = viewportWidth / imgWidth;
-            const heightRatio = viewportHeight / imgHeight;
-            const scaleFactor = Math.min(widthRatio, heightRatio); // Choose the smallest factor to fit
+        const widthRatio = viewportWidth / imgWidth;
+        const heightRatio = viewportHeight / imgHeight;
+        const scaleFactor = Math.min(widthRatio, heightRatio); // Choose the smallest factor to fit
 
-            lightboxImg.style.width = `${imgWidth * scaleFactor}px`;
-            lightboxImg.style.height = `${imgHeight * scaleFactor}px`;
-        };
+        lightboxImg.style.width = `${imgWidth * scaleFactor}px`;
+        lightboxImg.style.height = `${imgHeight * scaleFactor}px`;
     }
 
     function preloadNextImage() {
