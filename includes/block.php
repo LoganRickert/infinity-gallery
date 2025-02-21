@@ -132,6 +132,8 @@ function infinity_gallery_render_callback($attributes)
     </div>
     <script>
         (function() {
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
+            
             var gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
             if (!gallery) return;
 

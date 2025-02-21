@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let lastClickTime = 0;
 
     function openLightbox(index, gallery) {
+        disableScroll();
+
         currentIndex = index;
         images = [...document.querySelectorAll(`[data-gallery-id="${gallery}"] img`)];
         galleryID = gallery;
@@ -162,6 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 500);
 
         history.pushState({}, "", window.location.href.split("#")[0]); // Remove hash
+        enableScroll();
     }
 
     function nextImage() {
@@ -281,9 +284,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function disableScroll() {
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh'; // Ensures no vertical movement
+    }
+    
+    function enableScroll() {
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+    }
+
     document.querySelector("#lightbox").addEventListener("touchstart", handleTouchStart);
     document.querySelector("#lightbox").addEventListener("touchmove", handleTouchMove);
     document.querySelector("#lightbox").addEventListener("touchend", handleTouchEnd);
+
+    document.querySelectorAll('.lightbox button').forEach(button => {
+        button.addEventListener('mouseup', () => {
+            setTimeout(() => button.blur(), 200); // Removes focus
+        });
+    });
+
+    document.addEventListener('dblclick', (e) => {
+        if (document.querySelector('.lightbox.open')) {
+            e.preventDefault(); // Stops zooming
+        }
+    }, { passive: false });
 
     setupLightbox();
     window.addEventListener("resize", debounce(scaleLightboxImage, 100));

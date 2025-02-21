@@ -79,6 +79,7 @@
     pointer-events: none;
     transition: opacity 0.3s ease-in-out;
     z-index: 99999; /* Super high to cover everything */
+    touch-action: none;
 }
 
 /* Lightbox Active */
@@ -120,6 +121,17 @@
     font-size: 18px;
     cursor: pointer;
     z-index: 100001; /* Ensure above lightbox */
+    opacity: 0.5;
+}
+
+.lightbox button:hover, 
+.lightbox button:active, 
+.lightbox button:focus, 
+.lightbox button:visited {
+    background: black !important; /* Reset back to black */
+    color: white !important;
+    outline: none !important;
+    border: none !important;
 }
 
 .lightbox > button {
