@@ -28,6 +28,7 @@ jobs:
 
       - name: Build Project
         run: npm run build
+        
       - name: Get Git Tag
         id: get_version
         run: |
@@ -58,10 +59,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
   
+      - name: Get Git Tag
+        id: get_version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "VERSION=dev-build" >> $GITHUB_ENV
+          fi
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: infinity-gallery
+          name: infinity-gallery-${{ env.VERSION }}
           path: dist/
 
       - name: Get Tag Message
