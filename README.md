@@ -111,7 +111,10 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ## 📝 **Changelog**  
 
-### v1.4.0 (Latest Version)  
+### v1.5.0
+* Fixed touch screen issues with lightbox
+
+### v1.4.0 
 🔹 **New Features:**  
 - **Hide Lightbox Buttons**: Option to hide the **Info** and **Download** buttons.  
 - **CSS Image Filters**: Apply effects like **grayscale, blur, brightness, contrast, and hue-rotate**.  
