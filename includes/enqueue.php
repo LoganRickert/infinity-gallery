@@ -30,8 +30,8 @@ function infinity_gallery_enqueue_assets() {
         return; // Exit if no InfinityGallery block is found
     }
 
-    wp_enqueue_style('infinity-gallery-style', plugins_url('../build/gallery.css', __FILE__), [], INFINITY_GALLERY_VERSION);
-    wp_enqueue_script('infinity-gallery-script', plugins_url('../build/gallery.js', __FILE__), [], INFINITY_GALLERY_VERSION, true);
-    wp_enqueue_script('infinity-gallery-lightbox', plugins_url('../build/lightbox.js', __FILE__), [], INFINITY_GALLERY_VERSION, true);
+    wp_enqueue_style('infinity-gallery-style', plugins_url('../public/gallery.css', __FILE__), [], INFINITY_GALLERY_VERSION);
+    wp_enqueue_script('infinity-gallery-script', plugins_url('../public/gallery.js', __FILE__), [], INFINITY_GALLERY_VERSION, true);
+    wp_enqueue_script('infinity-gallery-lightbox', plugins_url('../public/lightbox.js', __FILE__), [], INFINITY_GALLERY_VERSION, true);
 }
 add_action('wp_enqueue_scripts', 'infinity_gallery_enqueue_assets');

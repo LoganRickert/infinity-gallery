@@ -6,6 +6,7 @@ yarn-error.log
 # Ignore build artifacts
 /build/
 /dist/
+/public/
 *.zip
 
 # Ignore editor and system files

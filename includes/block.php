@@ -13,7 +13,7 @@ function infinity_gallery_register_block()
     // Register the block editor script and style
     wp_register_script(
         'infinity-gallery-editor-script',
-        plugins_url('../build/index.js', __FILE__),
+        plugins_url('../public/index.js', __FILE__),
         array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
         INFINITY_GALLERY_VERSION,
         true
@@ -21,7 +21,7 @@ function infinity_gallery_register_block()
 
     wp_register_style(
         'infinity-gallery-editor-style',
-        plugins_url('../build/index.css', __FILE__),
+        plugins_url('../public/index.css', __FILE__),
         array(),
         INFINITY_GALLERY_VERSION
     );

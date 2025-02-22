@@ -17,7 +17,7 @@ async function packagePlugin() {
         await fs.copy('infinity-gallery.php', path.join(pluginFolder, 'infinity-gallery.php'));
         await fs.copy('readme.txt', path.join(pluginFolder, 'readme.txt'));
         await fs.copy('includes', path.join(pluginFolder, 'includes'));
-        await fs.copy('build', path.join(pluginFolder, 'build'));
+        await fs.copy('public', path.join(pluginFolder, 'public'));
 
         console.log('🗜️ Creating ZIP package...');
         const output = fs.createWriteStream(zipFile);
