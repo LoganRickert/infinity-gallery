@@ -3,7 +3,7 @@ Contributors: Logan Rickert
 Tags: gallery, lazy load, infinite scroll, images
 Requires at least: 5.6
 Tested up to: 6.7.2
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: Apache License 2.0
 License URI: https://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,6 +16,9 @@ InfinityGallery is a high-performance, lazy-loaded image gallery for WordPress. 
 3. Insert a gallery block in the editor and select images.
 
 == Changelog ==
+= 1.5.0 =
+* Fixed touch screen issues with lightbox
+
 = 1.4.0 =
 * Ability to add Lightbox Buttons.
 * CSS Filters

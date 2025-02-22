@@ -302,6 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (e.key === "Escape") closeLightbox();
             if (e.key === "ArrowRight") nextImage();
             if (e.key === "ArrowLeft") prevImage();
+            if (e.key === "ArrowDown") closeLightbox();
         });
 
         loadFromURL();
@@ -343,12 +344,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleTouchEnd() {
         const swipeDistance = touchStartX - touchEndX;
+        if (!touchEndX) return;
 
         if (swipeDistance > 50) {
             nextImage(); // Swipe left → Go forward
         } else if (swipeDistance < -50) {
             prevImage(); // Swipe right → Go back
         }
+
+        touchStartX = 0;
+        touchEndX = 0;
     }
 
     function disableScroll() {
@@ -361,9 +366,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.height = '';
     }
 
-    document.querySelector("#lightbox").addEventListener("touchstart", handleTouchStart);
-    document.querySelector("#lightbox").addEventListener("touchmove", handleTouchMove);
-    document.querySelector("#lightbox").addEventListener("touchend", handleTouchEnd);
+    document.querySelector("#lightbox-flip").addEventListener("touchstart", handleTouchStart);
+    document.querySelector("#lightbox-flip").addEventListener("touchmove", handleTouchMove);
+    document.querySelector("#lightbox-flip").addEventListener("touchend", handleTouchEnd);
 
     document.querySelectorAll('.lightbox button').forEach(button => {
         button.addEventListener('mouseup', () => {
@@ -376,6 +381,22 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault(); // Stops zooming
         }
     }, { passive: false });
+
+    document.querySelectorAll("#lightbox-prev").forEach(button => {
+        button.addEventListener("touchstart", (event) => {
+            console.log("Prev Touch");
+            prevImage();
+            event.stopPropagation();
+        });
+    });
+
+    document.querySelectorAll("#lightbox-next").forEach(button => {
+        button.addEventListener("touchstart", (event) => {
+            console.log("Next Touch");
+            nextImage();
+            event.stopPropagation();
+        });
+    });
 
     setupLightbox();
     window.addEventListener("resize", debounce(scaleLightboxImage, 100));

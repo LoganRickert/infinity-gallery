@@ -123,7 +123,7 @@
 
 /* Close Button */
 #lightbox-close {
-    top: 10px;
+    top: 20px;
     right: calc(20px + 1vw);
 }
 
@@ -145,8 +145,8 @@
 /* Bottom Buttons (Info & Download) */
 .lightbox-controls {
     position: absolute;
-    bottom: 20px;
-    right: calc(20px + 1vw); /* Stay slightly away from edge */
+    top: 20px;
+    left: calc(20px + 1vw);
     display: flex;
     gap: 15px;
     opacity: 0.75;
