@@ -78,8 +78,10 @@ function lazyLoadImages(gallery) {
 
                 const img = picture.querySelector("img");
 
-                if (img.dataset.full) {
-                    img.src = img.dataset.full;
+                // Load `selectedSrc` instead of `full`
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute("data-src"); // Prevent reloading
                 }
 
                 img.onload = () => {
@@ -107,8 +109,10 @@ function lazyLoadImages(gallery) {
 
             const img = picture.querySelector("img");
             
-            if (img.dataset.full) {
-                img.src = img.dataset.full;
+            // Load `selectedSrc` instead of `full`
+            if (img.dataset.src) {
+                img.src = img.dataset.src;
+                img.removeAttribute("data-src"); // Prevent reloading
             }
 
             img.onload = () => {
