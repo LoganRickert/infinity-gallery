@@ -83,7 +83,7 @@ registerBlockType('infinity/gallery', {
                             value={maxPerRow}
                             onChange={(value) => setAttributes({ maxPerRow: value })}
                             min={1}
-                            max={4}
+                            max={10}
                         />
                         <SelectControl
                             label={__('Image Size', 'infinity-gallery')}

@@ -7,19 +7,6 @@
     gap: 10px;
 }
 
-.infinity-gallery[data-max-per-row="4"] {
-    grid-template-columns: repeat(4, 1fr);
-}
-.infinity-gallery[data-max-per-row="3"] {
-    grid-template-columns: repeat(3, 1fr);
-}
-.infinity-gallery[data-max-per-row="2"] {
-    grid-template-columns: repeat(2, 1fr);
-}
-.infinity-gallery[data-max-per-row="1"] {
-    grid-template-columns: repeat(1, 1fr);
-}
-
 .infinity-gallery-item {
     width: 100%; /* Let the grid handle the widths */
     overflow: hidden;

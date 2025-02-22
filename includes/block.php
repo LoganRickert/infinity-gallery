@@ -64,6 +64,7 @@ function infinity_gallery_render_callback($attributes)
 
     $images = $attributes['images'];
     $imageSize = $attributes['imageSize'] ?? 'large';
+    $maxPerRow = $attributes['maxPerRow'] ?? 4;
 
     static $gallery_index = 0;
 
@@ -73,7 +74,7 @@ function infinity_gallery_render_callback($attributes)
 
     ob_start();
 ?>
-    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-max-per-row="4" data-gallery-id="<?php echo esc_attr($gallery_id) ?>">
+    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-max-per-row="<?php echo esc_attr($maxPerRow); ?>" data-gallery-id="<?php echo esc_attr($gallery_id) ?>">
         <?php foreach ($images as $index => $image) :
             // Ensure correct size selection
             $selectedSrc = isset($image['sizes'][$imageSize]['url']) ? $image['sizes'][$imageSize]['url'] : $image['url'];
@@ -82,7 +83,7 @@ function infinity_gallery_render_callback($attributes)
             // Unique image ID
             $image_id = "{$gallery_id}-{$index}";
         ?>
-            <figure class="infinity-gallery-item" style="border: 1px solid black">
+            <figure class="infinity-gallery-item">
                 <picture>
                     <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                         alt="<?php echo esc_attr($image['alt'] ?? 'Gallery Image'); ?>"
@@ -131,22 +132,38 @@ function infinity_gallery_render_callback($attributes)
         </div>
     </div>
     <script>
-        (function() {
-            document.body.scrollTop = document.documentElement.scrollTop = 0;
+    (function() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-            var gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
-            if (!gallery) return;
+        var gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
+        if (!gallery) return;
 
-            var newColumns = 1;
-            if (window.innerWidth >= 2000) newColumns = 4;
-            else if (window.innerWidth >= 1280) newColumns = 3;
-            else if (window.innerWidth >= 768) newColumns = 2;
+        // Read the correct maxPerRow from the data attribute
+        var maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
+        const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
 
-            gallery.dataset.maxPerRow = newColumns;
-            gallery.style.display = "grid";
-            gallery.style.gridTemplateColumns = "repeat(" + newColumns + ", 1fr)";
-        })();
-    </script>
+        // Dynamic scaling function
+        function calculateColumns() {
+            if (screenWidth < 768) return 1; // Always 1 image on mobile
+
+            if (maxPerRow <= 3) {
+                if (screenWidth < 1100) return 1; // 1 column under 1300px
+                if (screenWidth < 1600) return 2; // 2 columns under 1700px
+                return 3; // Otherwise, use 3 columns
+            }
+
+            // Scale columns based on screen width and maxPerRow
+            return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
+        }
+
+        var newColumns = calculateColumns();
+
+        // Set columns dynamically on initial load
+        gallery.dataset.maxPerRow = maxPerRow;
+        gallery.style.display = "grid";
+        gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
+    })();
+</script>
 <?php
     return ob_get_clean();
 }

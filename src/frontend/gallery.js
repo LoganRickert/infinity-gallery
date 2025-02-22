@@ -2,14 +2,16 @@ import "./styles.css";
 import debounce from 'lodash/debounce';
 
 document.addEventListener("DOMContentLoaded", function () {
-    document.body.scrollTop = document.documentElement.scrollTop = 0;
-
     const galleries = document.querySelectorAll('.infinity-gallery');
 
     galleries.forEach(gallery => {
         const maxPerRow = parseInt(gallery.dataset.maxPerRow, 10) || 3;
         setupGallery(gallery, maxPerRow);
     });
+
+    setTimeout(() => {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }, 50);
 });
 
 function setupGallery(gallery, maxPerRow) {
@@ -18,18 +20,29 @@ function setupGallery(gallery, maxPerRow) {
 }
 
 function applyResponsiveGrid(gallery, maxPerRow) {
+    function calculateColumns() {
+        const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
+        
+        if (screenWidth < 768) return 1; // Always 1 image on mobile
+
+        if (maxPerRow <= 3) {
+            if (screenWidth < 1100) return 1; // 1 column under 1300px
+            if (screenWidth < 1600) return 2; // 2 columns under 1700px
+            return 3; // Otherwise, use 3 columns
+        }
+
+        // Dynamically scale images per row based on maxPerRow
+        return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
+    }
+
     function updateGrid() {
+        console.log("Calling Update Grid", maxPerRow)
         if (!gallery) return;
 
         // Ensure maxPerRow is respected
-        let newColumns = 1;
-        const windowWidth = window.innerWidth;
+        const newColumns = calculateColumns();
 
-        if (windowWidth > 2000) newColumns = Math.min(4, maxPerRow);
-        else if (windowWidth >= 1280) newColumns = Math.min(3, maxPerRow);
-        else if (windowWidth >= 768) newColumns = Math.min(2, maxPerRow);
-
-        // Prevent unnecessary updates
+        // Only update if the number of columns actually changes
         if (gallery.dataset.currentColumns !== String(newColumns)) {
             console.log(`Updating columns to: ${newColumns}`);
             gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
@@ -79,7 +92,7 @@ function lazyLoadImages(gallery) {
                 observer.unobserve(picture);
             }
         });
-    }, { rootMargin: "200px 0px" }); // Load images 200px before they appear
+    }, { rootMargin: "400px 0px" }); // Load images 400px before they appear
 
     // Load images already in view
     gallery.querySelectorAll("picture").forEach(picture => {
