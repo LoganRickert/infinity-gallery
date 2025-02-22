@@ -2,6 +2,8 @@
 
 Infinity Gallery is a lightweight, high-performance WordPress gallery plugin designed for seamless image browsing. It supports infinite scrolling, dynamic image loading, mobile-friendly swipe gestures, a feature-rich lightbox, and optimized image selection for different screen sizes.  
 
+![Gutenberg Block Photo](./.github/infinity-gallery-preview-1.jpg)
+
 ---
 
 ## 🚀 **Features**  
