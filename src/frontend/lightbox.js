@@ -262,8 +262,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const viewportWidth = window.innerWidth * 0.9; // 90% of viewport width
         const viewportHeight = window.innerHeight * 0.9; // 90% of viewport height
 
-        const imgWidth = img.width;
-        const imgHeight = img.height;
+        const imgWidth = lightboxImg.width;
+        const imgHeight = lightboxImg.height;
 
         const widthRatio = viewportWidth / imgWidth;
         const heightRatio = viewportHeight / imgHeight;

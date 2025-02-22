@@ -16,3 +16,7 @@
     max-height: 100px;
     object-fit: cover;
 }
+
+.infinity-gallery-placeholder {
+    padding: 0 0 10px;
+}

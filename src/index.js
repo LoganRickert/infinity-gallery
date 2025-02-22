@@ -1,8 +1,17 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { MediaUpload, InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody, RangeControl } from '@wordpress/components';
+import { Button, PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
+
+const IMAGE_SIZES = [
+    { label: 'Thumbnail (150px)', value: 'thumbnail' },
+    { label: 'Medium (300px)', value: 'medium' },
+    { label: 'Large (1024px)', value: 'large' },
+    { label: 'Full (Original)', value: 'full' },
+    { label: '1536px', value: '1536x1536' },
+    { label: '2048px', value: '2048x2048' }
+];
 
 // Register the block
 registerBlockType('infinity/gallery', {
@@ -16,11 +25,15 @@ registerBlockType('infinity/gallery', {
         },
         maxPerRow: {
             type: 'number',
-            default: 3,
+            default: 4,
         },
+        imageSize: {
+            type: 'string',
+            default: 'large'
+        }
     },
     edit: ({ attributes, setAttributes }) => {
-        const { images, maxPerRow } = attributes;
+        const { images, maxPerRow, imageSize  } = attributes;
     
         // Function to sort images numerically & alphabetically
         const sortImagesByFilename = (images) => {
@@ -70,7 +83,13 @@ registerBlockType('infinity/gallery', {
                             value={maxPerRow}
                             onChange={(value) => setAttributes({ maxPerRow: value })}
                             min={1}
-                            max={5}
+                            max={4}
+                        />
+                        <SelectControl
+                            label={__('Image Size', 'infinity-gallery')}
+                            value={imageSize}
+                            options={IMAGE_SIZES}
+                            onChange={(value) => setAttributes({ imageSize: value })}
                         />
                     </PanelBody>
                 </InspectorControls>

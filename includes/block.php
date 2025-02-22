@@ -45,7 +45,11 @@ function infinity_gallery_register_block()
             ),
             'maxPerRow' => array(
                 'type' => 'number',
-                'default' => 3
+                'default' => 4
+            ),
+            'imageSize' => array(
+                'type' => 'string',
+                'default' => 'large'
             ),
         ),
     ));
@@ -59,6 +63,7 @@ function infinity_gallery_render_callback($attributes)
     }
 
     $images = $attributes['images'];
+    $imageSize = $attributes['imageSize'] ?? 'large';
 
     static $gallery_index = 0;
 
@@ -71,24 +76,21 @@ function infinity_gallery_render_callback($attributes)
     <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-max-per-row="4" data-gallery-id="<?php echo esc_attr($gallery_id) ?>">
         <?php foreach ($images as $index => $image) :
             // Ensure correct size selection
-            $smallSrc = isset($image['sizes']['medium']['url']) ? $image['sizes']['medium']['url'] : $image['url'];
-            $mediumSrc = isset($image['sizes']['large']['url']) ? $image['sizes']['large']['url'] : $image['url'];
+            $selectedSrc = isset($image['sizes'][$imageSize]['url']) ? $image['sizes'][$imageSize]['url'] : $image['url'];
             $fullSrc = isset($image['sizes']['full']['url']) ? $image['sizes']['full']['url'] : $image['url'];
 
             // Unique image ID
             $image_id = "{$gallery_id}-{$index}";
         ?>
-            <figure class="infinity-gallery-item">
+            <figure class="infinity-gallery-item" style="border: 1px solid black">
                 <picture>
-                    <source data-srcset="<?php echo esc_url($mediumSrc); ?>" media="(min-width: 1280px)">
-                    <source data-srcset="<?php echo esc_url($mediumSrc); ?>" media="(min-width: 768px)">
-                    <source data-srcset="<?php echo esc_url($smallSrc); ?>" media="(max-width: 767px)">
                     <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                         alt="<?php echo esc_attr($image['alt'] ?? 'Gallery Image'); ?>"
                         class="infinity-gallery-image"
                         loading="lazy"
                         data-id="<?php echo esc_attr($image_id); ?>"
                         data-full="<?php echo esc_url($fullSrc); ?>"
+                        data-src="<?php echo esc_url($selectedSrc); ?>"
                         data-filename="<?php echo basename($image['url']); ?>">
                 </picture>
                 <?php if (!empty($image['caption'])) : ?>

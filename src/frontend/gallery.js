@@ -19,24 +19,36 @@ function setupGallery(gallery, maxPerRow) {
 
 function applyResponsiveGrid(gallery, maxPerRow) {
     function updateGrid() {
-        let currentColumns = getComputedStyle(gallery).gridTemplateColumns.split(" ").length;
+        if (!gallery) return;
 
-        console.log("Setting column count");
-
+        // Ensure maxPerRow is respected
         let newColumns = 1;
-        if (window.innerWidth > 2000) newColumns = Math.min(4, maxPerRow);
-        else if (window.innerWidth >= 1280) newColumns = Math.min(3, maxPerRow);
-        else if (window.innerWidth >= 768) newColumns = Math.min(2, maxPerRow);
+        const windowWidth = window.innerWidth;
 
-        // Only update if the number of columns actually changes
-        if (currentColumns !== newColumns) {
+        if (windowWidth > 2000) newColumns = Math.min(4, maxPerRow);
+        else if (windowWidth >= 1280) newColumns = Math.min(3, maxPerRow);
+        else if (windowWidth >= 768) newColumns = Math.min(2, maxPerRow);
+
+        // Prevent unnecessary updates
+        if (gallery.dataset.currentColumns !== String(newColumns)) {
+            console.log(`Updating columns to: ${newColumns}`);
             gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
+            gallery.dataset.currentColumns = String(newColumns);
         }
     }
 
-    // Initialize grid correctly when the page loads
+    // Initialize grid on load
     updateGrid();
-    window.addEventListener("resize", debounce(updateGrid, 50));
+
+    // Prevent multiple event listeners
+    if (!gallery.dataset.listenerAdded) {
+        window.addEventListener("resize", debounce(updateGrid, 100));
+        gallery.dataset.listenerAdded = "true";
+    }
+
+    // Detect if the gallery is modified (e.g., reloaded via AJAX or Reactivity)
+    const observer = new MutationObserver(updateGrid);
+    observer.observe(gallery, { childList: true, subtree: true });
 }
 
 function lazyLoadImages(gallery) {

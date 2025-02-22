@@ -43,26 +43,6 @@
     transition: opacity 0.3s ease-in-out;
 }
 
-/* 2000px and above → 4 columns */
-@media (min-width: 2000px) {
-    .infinity-gallery { grid-template-columns: repeat(4, 1fr); }
-}
-
-/* 1280px to 1999px → 3 columns */
-@media (min-width: 1280px) and (max-width: 1999px) {
-    .infinity-gallery { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* 768px to 1279px → 2 columns */
-@media (min-width: 768px) and (max-width: 1279px) {
-    .infinity-gallery { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Below 768px → 1 column */
-@media (max-width: 767px) {
-    .infinity-gallery { grid-template-columns: repeat(1, 1fr); }
-}
-
 /* Lightbox Overlay */
 .lightbox {
     position: fixed;
