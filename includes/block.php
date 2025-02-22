@@ -3,78 +3,59 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Define a fallback version
+if (!defined('INFINITY_GALLERY_VERSION')) {
+    define('INFINITY_GALLERY_VERSION', '1.0.0');
+}
+
 function infinity_gallery_register_block()
 {
     // Register the block editor script and style
     wp_register_script(
         'infinity-gallery-editor-script',
-        plugins_url('../build/index.js?v=1', __FILE__), // Future: This will be the editor JS file
-        array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'), // Dependencies
+        plugins_url('../build/index.js', __FILE__),
+        array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
         INFINITY_GALLERY_VERSION,
         true
     );
 
     wp_register_style(
         'infinity-gallery-editor-style',
-        plugins_url('../build/index.css', __FILE__), // Future: This will be the editor CSS file
+        plugins_url('../build/index.css', __FILE__),
         array(),
         INFINITY_GALLERY_VERSION
     );
 
     register_block_type('infinity/gallery', array(
-        'editor_script' => 'infinity-gallery-editor-script',
-        'editor_style'  => 'infinity-gallery-editor-style',
+        'editor_script'   => 'infinity-gallery-editor-script',
+        'editor_style'    => 'infinity-gallery-editor-style',
         'render_callback' => 'infinity_gallery_render_callback',
         'attributes'      => array(
             'images' => array(
-                'type' => 'array',
+                'type'    => 'array',
                 'default' => array(),
-                'items' => array(
-                    'type' => 'object',
+                'items'   => array(
+                    'type'       => 'object',
                     'properties' => array(
-                        'id' => array('type' => 'number'),
-                        'url' => array('type' => 'string'),
-                        'alt' => array('type' => 'string'),
-                        'caption' => array('type' => 'string'),
-                        'description' => array('type' => 'string'),
-                        'fullUrl' => array('type' => 'string'),
+                        'id'           => array('type' => 'number'),
+                        'url'          => array('type' => 'string'),
+                        'alt'          => array('type' => 'string'),
+                        'caption'      => array('type' => 'string'),
+                        'description'  => array('type' => 'string'),
+                        'fullUrl'      => array('type' => 'string'),
                         'thumbnailUrl' => array('type' => 'string'),
-                        'sizes' => array('type' => 'object'),
+                        'sizes'        => array('type' => 'object'),
                     ),
                 ),
             ),
-            'maxPerRow' => array(
-                'type' => 'number',
-                'default' => 4
-            ),
-            'imageSize' => array(
-                'type' => 'string',
-                'default' => 'large'
-            ),
-            'gutterSize' => array(
-                'type'    => 'number',
-                'default' => 10
-            ),
-            'cropImages' => array( 
-                'type'    => 'boolean',
-                'default' => false
-            ),
-            'hideInfo' => array(
-                'type'    => 'boolean',
-                'default' => false
-            ),
-            'hideDownload' => array( 
-                'type'    => 'boolean',
-                'default' => false
-            ),
-            'filterType' => array(
-                'type'    => 'string',
-                'default' => 'none'
-            ),
-            'filterStrength' => array(
-                'type'    => 'number',
-                'default' => 100
-            ),
+            'maxPerRow'       => array('type' => 'number', 'default' => 4),
+            'imageSize'       => array('type' => 'string', 'default' => 'large'),
+            'gutterSize'      => array('type' => 'number', 'default' => 10),
+            'cropImages'      => array('type' => 'boolean', 'default' => false),
+            'hideInfo'        => array('type' => 'boolean', 'default' => false),
+            'hideDownload'    => array('type' => 'boolean', 'default' => false),
+            'filterType'      => array('type' => 'string', 'default' => 'none'),
+            'filterStrength'  => array('type' => 'number', 'default' => 100),
         ),
     ));
 }
@@ -87,14 +68,14 @@ function infinity_gallery_render_callback($attributes)
     }
 
     $images = $attributes['images'];
-    $imageSize = $attributes['imageSize'] ?? 'large';
-    $maxPerRow = $attributes['maxPerRow'] ?? 4;
-    $gutterSize = $attributes['gutterSize'] ?? 10;
-    $cropImages = $attributes['cropImages'] ?? false;
-    $hideInfo = $attributes['hideInfo'] ?? false;
-    $hideDownload = $attributes['hideDownload'] ?? false;
-    $filterType = $attributes['filterType'] ?? 'none';
-    $filterStrength = $attributes['filterStrength'] ?? 100;
+    $imageSize = sanitize_text_field($attributes['imageSize'] ?? 'large');
+    $maxPerRow = intval($attributes['maxPerRow'] ?? 4);
+    $gutterSize = intval($attributes['gutterSize'] ?? 10);
+    $cropImages = boolval($attributes['cropImages'] ?? false);
+    $hideInfo = boolval($attributes['hideInfo'] ?? false);
+    $hideDownload = boolval($attributes['hideDownload'] ?? false);
+    $filterType = sanitize_text_field($attributes['filterType'] ?? 'none');
+    $filterStrength = intval($attributes['filterStrength'] ?? 100);
 
     static $gallery_index = 0;
 
@@ -114,9 +95,13 @@ function infinity_gallery_render_callback($attributes)
         data-filter-type="<?php echo esc_attr($filterType); ?>"
         data-filter-strength="<?php echo esc_attr($filterStrength); ?>">
         <?php foreach ($images as $index => $image) :
+            if (!isset($image['url']) || !wp_http_validate_url($image['url'])) {
+                continue; // Skip invalid URLs
+            }
+
             // Ensure correct size selection
-            $selectedSrc = isset($image['sizes'][$imageSize]['url']) ? $image['sizes'][$imageSize]['url'] : $image['url'];
-            $fullSrc = isset($image['sizes']['full']['url']) ? $image['sizes']['full']['url'] : $image['url'];
+            $selectedSrc = !empty($image['sizes'][$imageSize]['url']) ? esc_url($image['sizes'][$imageSize]['url']) : esc_url($image['url']);
+            $fullSrc = !empty($image['sizes']['full']['url']) ? esc_url($image['sizes']['full']['url']) : esc_url($image['url']);
 
             // Unique image ID
             $image_id = "{$gallery_id}-{$index}";
@@ -130,11 +115,8 @@ function infinity_gallery_render_callback($attributes)
                         data-id="<?php echo esc_attr($image_id); ?>"
                         data-full="<?php echo esc_url($fullSrc); ?>"
                         data-src="<?php echo esc_url($selectedSrc); ?>"
-                        data-filename="<?php echo basename($image['url']); ?>">
+                        data-filename="<?php echo esc_attr(basename($image['url'])); ?>">
                 </picture>
-                <?php if (!empty($image['caption'])) : ?>
-                    <figcaption><?php echo esc_html($image['caption']); ?></figcaption>
-                <?php endif; ?>
             </figure>
         <?php endforeach; ?>
     </div>

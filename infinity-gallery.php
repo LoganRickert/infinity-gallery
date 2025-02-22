@@ -2,7 +2,7 @@
 /**
  * Plugin Name: InfinityGallery
  * Description: A high-performance, lazy-loaded gallery plugin for WordPress.
- * Version: 1.5.0
+ * Version: 1.6.0
  * Author: Logan Rickert
  * License: Apache License 2.0
  * License URI: https://www.apache.org/licenses/LICENSE-2.0
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('INFINITY_GALLERY_VERSION', '1.5.0');
+define('INFINITY_GALLERY_VERSION', '1.6.0');
 define('INFINITY_GALLERY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('INFINITY_GALLERY_PLUGIN_URL', plugin_dir_url(__FILE__));
 

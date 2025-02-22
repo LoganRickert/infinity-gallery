@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentIndex = 0;
     let images = [];
     let galleryID = '';
+    let lightboxEventsAdded = false;
     let lastClickTime = 0;
 
     function openLightbox(index, galleryId) {
@@ -71,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 lightboxImg.style.height = `${imgHeight * scaleFactor}px`;
 
                 preloadNextImage();
-                extractExifMetadata(newImg);
+                setTimeout(() => extractExifMetadata(newImg), 200);
             };
         }
 
@@ -218,8 +219,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateURL() {
         const id = images[currentIndex].dataset.id;
-        const baseUrl = window.location.href.split("#")[0]; // Keep original URL
-        history.pushState({}, "", `${baseUrl}#${id}`); // Remove duplicate gallery ID
+        const baseUrl = window.location.href.split("#")[0];
+        history.replaceState({}, "", `${baseUrl}#${id}`);
     }
 
     function closeLightbox() {
@@ -284,26 +285,30 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        document.querySelector("#lightbox-close").addEventListener("click", closeLightbox);
-        document.querySelector("#lightbox-next").addEventListener("click", nextImage);
-        document.querySelector("#lightbox-prev").addEventListener("click", prevImage);
-        document.querySelector("#lightbox-download").addEventListener("click", downloadImage);
+        if (!lightboxEventsAdded) {
+            document.querySelector("#lightbox-close").addEventListener("click", closeLightbox);
+            document.querySelector("#lightbox-next").addEventListener("click", nextImage);
+            document.querySelector("#lightbox-prev").addEventListener("click", prevImage);
+            document.querySelector("#lightbox-download").addEventListener("click", downloadImage);
 
-        // Prevent duplicate tap events on mobile
-        document.querySelector("#lightbox-next").addEventListener("touchend", (e) => e.preventDefault());
-        document.querySelector("#lightbox-prev").addEventListener("touchend", (e) => e.preventDefault());
+            // Prevent duplicate tap events on mobile
+            document.querySelector("#lightbox-next").addEventListener("touchend", (e) => e.preventDefault());
+            document.querySelector("#lightbox-prev").addEventListener("touchend", (e) => e.preventDefault());
 
-        // Close lightbox when clicking outside the image
-        document.querySelector("#lightbox").addEventListener("click", function (e) {
-            if (e.target === this) closeLightbox();
-        });
+            // Close lightbox when clicking outside the image
+            document.querySelector("#lightbox").addEventListener("click", function (e) {
+                if (e.target === this) closeLightbox();
+            });
 
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") closeLightbox();
-            if (e.key === "ArrowRight") nextImage();
-            if (e.key === "ArrowLeft") prevImage();
-            if (e.key === "ArrowDown") closeLightbox();
-        });
+            window.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeLightbox();
+                if (e.key === "ArrowRight") nextImage();
+                if (e.key === "ArrowLeft") prevImage();
+                if (e.key === "ArrowDown") closeLightbox();
+            });
+
+            lightboxEventsAdded = true;
+        }
 
         loadFromURL();
     }
@@ -384,7 +389,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll("#lightbox-prev").forEach(button => {
         button.addEventListener("touchstart", (event) => {
-            console.log("Prev Touch");
             prevImage();
             event.stopPropagation();
         });
@@ -392,7 +396,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelectorAll("#lightbox-next").forEach(button => {
         button.addEventListener("touchstart", (event) => {
-            console.log("Next Touch");
             nextImage();
             event.stopPropagation();
         });

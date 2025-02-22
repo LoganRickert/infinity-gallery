@@ -49,8 +49,8 @@ registerBlockType('infinity/gallery', {
                 const nameA = a.url.split('/').pop().toLowerCase(); // Extract filename from URL
                 const nameB = b.url.split('/').pop().toLowerCase();
 
-                const matchA = nameA.match(/(.*?)(\d+)?(\.\w+)$/);
-                const matchB = nameB.match(/(.*?)(\d+)?(\.\w+)$/);
+                const matchA = nameA.match(/(.*?)(\d+)?(\.\w+)$/) || [];
+                const matchB = nameB.match(/(.*?)(\d+)?(\.\w+)$/) || [];
 
                 const baseA = matchA ? matchA[1] : nameA;
                 const baseB = matchB ? matchB[1] : nameB;
@@ -161,7 +161,7 @@ registerBlockType('infinity/gallery', {
                     {images.length > 0 ? (
                         <div className="infinity-gallery-preview">
                             {images.map((image) => (
-                                <img key={image.id} src={image.thumbnailUrl} alt={image.alt} />
+                                <img key={image.id} src={image.thumbnailUrl} alt={image.alt} role="img" aria-label={image.alt || 'Gallery image'} />
                             ))}
                         </div>
                     ) : (

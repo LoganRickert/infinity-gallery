@@ -111,6 +111,9 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ## 📝 **Changelog**  
 
+### v1.6.0
+* Fixed some potential security issues.
+
 ### v1.5.0
 * Fixed touch screen issues with lightbox
 

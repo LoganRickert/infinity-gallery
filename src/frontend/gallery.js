@@ -9,10 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
         setupGallery(gallery, maxPerRow, gutterSize);
     });
-
-    setTimeout(() => {
-        document.body.scrollTop = document.documentElement.scrollTop = 0;
-    }, 50);
 });
 
 function setupGallery(gallery, maxPerRow, gutterSize) {
@@ -32,8 +28,6 @@ function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
             return 3; // Otherwise, use 3 columns
         }
 
-        gallery.style.gap = `${gutterSize}px`;
-
         // Dynamically scale images per row based on maxPerRow
         return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
     }
@@ -49,6 +43,8 @@ function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
             gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
             gallery.dataset.currentColumns = String(newColumns);
         }
+
+        gallery.style.gap = `${gutterSize}px`;
     }
 
     // Initialize grid on load
@@ -65,36 +61,38 @@ function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
     observer.observe(gallery, { childList: true, subtree: true });
 }
 
+function loadPicture(picture) {
+    picture.querySelectorAll("source").forEach(source => {
+        if (source.dataset.srcset) {
+            source.srcset = source.dataset.srcset;
+            source.removeAttribute("data-srcset");
+        }
+    });
+
+    const img = picture.querySelector("img");
+    if (img.dataset.src) {
+        img.src = img.dataset.src;
+        img.removeAttribute("data-src");
+    }
+
+    img.onload = () => img.classList.add("loaded");
+    img.style.opacity = 1;
+}
+
 function lazyLoadImages(gallery) {
+    if (gallery.dataset.lazyObserverAdded) return; // Prevent duplicate observers
+
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             const picture = entry.target;
 
             if (entry.isIntersecting) {
-                const sources = picture.querySelectorAll("source");
-                sources.forEach(source => {
-                    if (source.dataset.srcset) {
-                        source.srcset = source.dataset.srcset;
-                        source.removeAttribute("data-srcset"); // Prevent reloading
-                    }
-                });
-
-                const img = picture.querySelector("img");
-
-                // Load `selectedSrc` instead of `full`
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute("data-src"); // Prevent reloading
-                }
-
-                img.onload = () => {
-                    img.classList.add("loaded");
-                };
-
-                img.style.opacity = 1;
+                loadPicture(picture);
                 observer.unobserve(picture);
             }
         });
+
+        gallery.dataset.lazyObserverAdded = "true";
     }, { rootMargin: "400px 0px" }); // Load images 400px before they appear
 
     // Load images already in view
@@ -103,26 +101,7 @@ function lazyLoadImages(gallery) {
         const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
         if (isVisible) {
-            picture.querySelectorAll("source").forEach(source => {
-                if (source.dataset.srcset) {
-                    source.srcset = source.dataset.srcset;
-                    source.removeAttribute("data-srcset");
-                }
-            });
-
-            const img = picture.querySelector("img");
-            
-            // Load `selectedSrc` instead of `full`
-            if (img.dataset.src) {
-                img.src = img.dataset.src;
-                img.removeAttribute("data-src"); // Prevent reloading
-            }
-
-            img.onload = () => {
-                img.classList.add("loaded");
-            };
-
-            img.style.opacity = 1;
+            loadPicture(picture);
         } else {
             observer.observe(picture);
         }
