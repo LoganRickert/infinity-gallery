@@ -51,6 +51,30 @@ function infinity_gallery_register_block()
                 'type' => 'string',
                 'default' => 'large'
             ),
+            'gutterSize' => array(
+                'type'    => 'number',
+                'default' => 10
+            ),
+            'cropImages' => array( 
+                'type'    => 'boolean',
+                'default' => false
+            ),
+            'hideInfo' => array(
+                'type'    => 'boolean',
+                'default' => false
+            ),
+            'hideDownload' => array( 
+                'type'    => 'boolean',
+                'default' => false
+            ),
+            'filterType' => array(
+                'type'    => 'string',
+                'default' => 'none'
+            ),
+            'filterStrength' => array(
+                'type'    => 'number',
+                'default' => 100
+            ),
         ),
     ));
 }
@@ -67,7 +91,10 @@ function infinity_gallery_render_callback($attributes)
     $maxPerRow = $attributes['maxPerRow'] ?? 4;
     $gutterSize = $attributes['gutterSize'] ?? 10;
     $cropImages = $attributes['cropImages'] ?? false;
-    $enableMasonry = $attributes['enableMasonry'] ?? false;
+    $hideInfo = $attributes['hideInfo'] ?? false;
+    $hideDownload = $attributes['hideDownload'] ?? false;
+    $filterType = $attributes['filterType'] ?? 'none';
+    $filterStrength = $attributes['filterStrength'] ?? 100;
 
     static $gallery_index = 0;
 
@@ -77,11 +104,15 @@ function infinity_gallery_render_callback($attributes)
 
     ob_start();
 ?>
-    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
+    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>"
+        data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
         data-max-per-row="<?php echo esc_attr($maxPerRow); ?>"
         data-gutter-size="<?php echo esc_attr($gutterSize); ?>"
         data-crop-images="<?php echo esc_attr($cropImages ? 'true' : 'false'); ?>"
-        data-enable-masonry="<?php echo esc_attr($enableMasonry ? 'true' : 'false'); ?>">
+        data-hide-info="<?php echo esc_attr($hideInfo ? 'true' : 'false'); ?>"
+        data-hide-download="<?php echo esc_attr($hideDownload ? 'true' : 'false'); ?>"
+        data-filter-type="<?php echo esc_attr($filterType); ?>"
+        data-filter-strength="<?php echo esc_attr($filterStrength); ?>">
         <?php foreach ($images as $index => $image) :
             // Ensure correct size selection
             $selectedSrc = isset($image['sizes'][$imageSize]['url']) ? $image['sizes'][$imageSize]['url'] : $image['url'];
@@ -130,10 +161,10 @@ function infinity_gallery_render_callback($attributes)
 
         <!-- Bottom Buttons -->
         <div class="lightbox-controls">
-            <button id="lightbox-info">
+            <button id="lightbox-info" aria-label="Image Information">
                 <span>ℹ Info</span>
             </button>
-            <button id="lightbox-download">
+            <button id="lightbox-download" aria-label="Download Image">
                 <span>⬇ Download</span>
             </button>
         </div>
@@ -171,6 +202,26 @@ function infinity_gallery_render_callback($attributes)
             gallery.style.display = "grid";
             gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
             gallery.style.gap = `${gutterSize}px`;
+
+            document.querySelectorAll('.infinity-gallery').forEach(gallery => {
+                const filterType = gallery.dataset.filterType;
+                const filterStrength = gallery.dataset.filterStrength || 100;
+
+                let filterValue = 'none';
+                if (filterType !== 'none') {
+                    let filterSign = "%";
+
+                    if (filterType === "blur") {
+                        filterSign = "px";
+                    } else if (filterType === "hue-rotate") {
+                        filterSign = "deg";
+                    }
+
+                    filterValue = `${filterType}(${filterStrength}${filterSign})`;
+                }
+
+                gallery.style.setProperty('--gallery-filter', filterValue);
+            });
         })();
     </script>
 <?php

@@ -2,24 +2,46 @@
 import EXIF from "exif-js";
 import debounce from "lodash/debounce";
 
-const loadingGif = "/wp-content/plugins/infinity-gallery/assets/loading.gif";
-
 document.addEventListener("DOMContentLoaded", function () {
     let currentIndex = 0;
     let images = [];
     let galleryID = '';
     let lastClickTime = 0;
 
-    function openLightbox(index, gallery) {
+    function openLightbox(index, galleryId) {
         console.log("Triggering Open Lightbox");
         disableScroll();
 
         currentIndex = index;
-        images = [...document.querySelectorAll(`[data-gallery-id="${gallery}"] img`)];
-        galleryID = gallery;
+        galleryID = galleryId;
+        const gallery = document.querySelector(`[data-gallery-id="${galleryId}"]`);
 
+        console.log("Gallery", gallery, gallery.dataset);
+
+        images = [...gallery.querySelectorAll("img")];
         const image = images[currentIndex];
         const lightboxImg = document.querySelector("#lightbox-img");
+
+        const filterType = gallery.dataset.filterType || "none";
+        const filterStrength = gallery.dataset.filterStrength || 100;
+        const hideInfo = gallery.dataset.hideInfo === "true";
+        const hideDownload = gallery.dataset.hideDownload === "true";
+
+        let filterValue = "none";
+
+        if (filterType !== "none") {
+            let filterSign = "%";
+            
+            if (filterType === "blur") {
+                filterSign = "px";
+            } else if (filterType === "hue-rotate") {
+                filterSign = "deg";
+            }
+
+            filterValue = `${filterType}(${filterStrength}${filterSign})`;
+        }
+
+        lightboxImg.style.filter = filterValue; // Apply filter dynamically
 
         console.log("Src:", lightboxImg.src);
 
@@ -57,6 +79,30 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#lightbox").removeAttribute("aria-hidden");
         document.querySelector("#lightbox").removeAttribute("inert");
 
+        // Show/hide buttons based on gallery settings
+        const infoButton = document.querySelector("#lightbox-info");
+        const downloadButton = document.querySelector("#lightbox-download");
+
+        if (hideInfo) {
+            infoButton.style.display = "none";
+            infoButton.setAttribute("aria-hidden", "true");
+            infoButton.setAttribute("inert", "true");
+        } else {
+            infoButton.style.display = "block";
+            infoButton.removeAttribute("aria-hidden");
+            infoButton.removeAttribute("inert");
+        }
+
+        if (hideDownload) {
+            downloadButton.style.display = "none";
+            downloadButton.setAttribute("aria-hidden", "true");
+            downloadButton.setAttribute("inert", "true");
+        } else {
+            downloadButton.style.display = "block";
+            downloadButton.removeAttribute("aria-hidden");
+            downloadButton.removeAttribute("inert");
+        }
+
         const metaText = `Loading Metadata...`;
         document.querySelector("#meta-info").innerHTML = metaText;
 
@@ -79,8 +125,13 @@ document.addEventListener("DOMContentLoaded", function () {
             // Extract Camera Make & Model
             const make = EXIF.getTag(this, "Make");
             const model = EXIF.getTag(this, "Model");
+
             if (make || model) {
-                metadata.camera = [make, model].filter(Boolean).join(" ");
+                if (model && model.includes(make)) {
+                    metadata.camera = model;
+                } else {
+                    metadata.camera = [make, model].filter(Boolean).join(" ");
+                }
             }
     
             // Extract ISO
@@ -178,10 +229,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelector("#lightbox").setAttribute("aria-hidden", "true");
         document.querySelector("#lightbox").setAttribute("inert", "true");
         
-        setTimeout(() => {
-            const lightboxImg = document.querySelector("#lightbox-img");
-            lightboxImg.src = loadingGif;
-        }, 500);
+        const lightboxImg = document.querySelector("#lightbox-img");
+        lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+        lightboxImg.style.filter = "none"; // ✅ Reset filter when closing
 
         history.pushState({}, "", window.location.href.split("#")[0]); // Remove hash
         enableScroll();

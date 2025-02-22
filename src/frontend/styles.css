@@ -204,3 +204,16 @@
 .lightbox-flip.flipped .lightbox-meta {
     transform: rotateY(0deg);
 }
+
+.infinity-gallery-image {
+    filter: var(--gallery-filter, none);
+}
+
+/* Hide buttons if toggled */
+.infinity-gallery[data-hide-info="true"] .lightbox-controls #lightbox-info {
+    display: none;
+}
+
+.infinity-gallery[data-hide-download="true"] .lightbox-controls #lightbox-download {
+    display: none;
+}

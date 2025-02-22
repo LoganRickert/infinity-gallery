@@ -1,6 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { MediaUpload, InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody, RangeControl, SelectControl, ToggleControl} from '@wordpress/components';
+import { Button, PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
 
@@ -13,6 +13,18 @@ const IMAGE_SIZES = [
     { label: '2048px', value: '2048x2048' }
 ];
 
+const FILTERS = [
+    { label: 'None', value: 'none' },
+    { label: 'Grayscale', value: 'grayscale' },
+    { label: 'Sepia', value: 'sepia' },
+    { label: 'Blur', value: 'blur' },
+    { label: 'Brightness', value: 'brightness' },
+    { label: 'Contrast', value: 'contrast' },
+    { label: 'Saturate', value: 'saturate' },
+    { label: 'Invert', value: 'invert' },
+    { label: 'Hue Rotate', value: 'hue-rotate' }
+];
+
 // Register the block
 registerBlockType('infinity/gallery', {
     title: __('Infinity Gallery', 'infinity-gallery'),
@@ -23,11 +35,14 @@ registerBlockType('infinity/gallery', {
         maxPerRow: { type: 'number', default: 4 },
         imageSize: { type: 'string', default: 'large' },
         gutterSize: { type: 'number', default: 10 },
-        cropImages: { type: 'boolean', default: false }
+        cropImages: { type: 'boolean', default: false },
+        hideInfo: { type: 'boolean', default: false },
+        hideDownload: { type: 'boolean', default: false },
+        filterType: { type: 'string', default: 'none' },
+        filterStrength: { type: 'number', default: 100 }
     },
     edit: ({ attributes, setAttributes }) => {
-        const { images, maxPerRow, imageSize, gutterSize, cropImages } = attributes;
-    
+        const { images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload, filterType, filterStrength } = attributes;
         // Function to sort images numerically & alphabetically
         const sortImagesByFilename = (images) => {
             return images.sort((a, b) => {
@@ -52,7 +67,7 @@ registerBlockType('infinity/gallery', {
         // Function to open media library
         const selectImages = (newImages) => {
             const sortedImages = sortImagesByFilename(newImages);
-    
+
             setAttributes({
                 images: sortedImages.map(image => ({
                     id: image.id,
@@ -66,7 +81,19 @@ registerBlockType('infinity/gallery', {
                 }))
             });
         };
-    
+
+        let filterLabel = __('Filter Strength (%)', 'infinity-gallery');
+        let minFilterRange = 0;
+        let maxFilterRange = 100;
+
+        if (filterType === 'blur') {
+            filterLabel = __('Blur Strength (px)', 'infinity-gallery');
+            maxFilterRange = 50;
+        } else if (filterType === 'hue-rotate') {
+            filterLabel = __('Hue Rotation (deg)', 'infinity-gallery');
+            maxFilterRange = 360;
+        }
+
         return (
             <>
                 <InspectorControls>
@@ -97,8 +124,39 @@ registerBlockType('infinity/gallery', {
                             onChange={(value) => setAttributes({ cropImages: value })}
                         />
                     </PanelBody>
+
+                    <PanelBody title={__('Lightbox Settings', 'infinity-gallery')}>
+                        <ToggleControl
+                            label={__('Hide Info Button', 'infinity-gallery')}
+                            checked={hideInfo}
+                            onChange={(value) => setAttributes({ hideInfo: value })}
+                        />
+                        <ToggleControl
+                            label={__('Hide Download Button', 'infinity-gallery')}
+                            checked={hideDownload}
+                            onChange={(value) => setAttributes({ hideDownload: value })}
+                        />
+                    </PanelBody>
+
+                    <PanelBody title={__('Image Filters', 'infinity-gallery')}>
+                    <SelectControl
+                            label={__('Filter Type', 'infinity-gallery')}
+                            value={filterType}
+                            options={FILTERS}
+                            onChange={(value) => setAttributes({ filterType: value })}
+                        />
+                        {filterType !== 'none' && (
+                            <RangeControl
+                                label={filterLabel}
+                                value={filterStrength}
+                                onChange={(value) => setAttributes({ filterStrength: value })}
+                                min={minFilterRange}
+                                max={maxFilterRange}
+                            />
+                        )}
+                    </PanelBody>
                 </InspectorControls>
-                
+
                 <div className="infinity-gallery-editor">
                     {images.length > 0 ? (
                         <div className="infinity-gallery-preview">
@@ -111,7 +169,7 @@ registerBlockType('infinity/gallery', {
                             <p>{__('Click "Select Images" to add a gallery.', 'infinity-gallery')}</p>
                         </div>
                     )}
-    
+
                     <MediaUpload
                         onSelect={selectImages}
                         allowedTypes={['image']}
@@ -124,11 +182,11 @@ registerBlockType('infinity/gallery', {
                             </Button>
                         )}
                     />
-                    
+
                     {images.length > 0 && (
-                        <Button 
-                            isDestructive 
-                            isSmall 
+                        <Button
+                            isDestructive
+                            isSmall
                             onClick={() => setAttributes({ images: [] })}>
                             {__('Remove All Images', 'infinity-gallery')}
                         </Button>
@@ -139,5 +197,5 @@ registerBlockType('infinity/gallery', {
     },
     save: () => {
         return null; // The frontend is handled via PHP render callback
-    },
+    }
 });
