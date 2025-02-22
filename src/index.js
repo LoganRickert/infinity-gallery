@@ -1,6 +1,6 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { MediaUpload, InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody, RangeControl, SelectControl } from '@wordpress/components';
+import { Button, PanelBody, RangeControl, SelectControl, ToggleControl} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
 
@@ -19,21 +19,14 @@ registerBlockType('infinity/gallery', {
     icon: 'format-gallery',
     category: 'media',
     attributes: {
-        images: {
-            type: 'array',
-            default: [],
-        },
-        maxPerRow: {
-            type: 'number',
-            default: 4,
-        },
-        imageSize: {
-            type: 'string',
-            default: 'large'
-        }
+        images: { type: 'array', default: [] },
+        maxPerRow: { type: 'number', default: 4 },
+        imageSize: { type: 'string', default: 'large' },
+        gutterSize: { type: 'number', default: 10 },
+        cropImages: { type: 'boolean', default: false }
     },
     edit: ({ attributes, setAttributes }) => {
-        const { images, maxPerRow, imageSize  } = attributes;
+        const { images, maxPerRow, imageSize, gutterSize, cropImages } = attributes;
     
         // Function to sort images numerically & alphabetically
         const sortImagesByFilename = (images) => {
@@ -90,6 +83,18 @@ registerBlockType('infinity/gallery', {
                             value={imageSize}
                             options={IMAGE_SIZES}
                             onChange={(value) => setAttributes({ imageSize: value })}
+                        />
+                        <RangeControl
+                            label={__('Gutter Size (px)', 'infinity-gallery')}
+                            value={gutterSize}
+                            onChange={(value) => setAttributes({ gutterSize: value })}
+                            min={0}
+                            max={50}
+                        />
+                        <ToggleControl
+                            label={__('Crop Images to Uniform Height', 'infinity-gallery')}
+                            checked={cropImages}
+                            onChange={(value) => setAttributes({ cropImages: value })}
                         />
                     </PanelBody>
                 </InspectorControls>

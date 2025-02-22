@@ -5,6 +5,14 @@
 .infinity-gallery {
     display: grid;
     gap: 10px;
+    transition: grid-template-columns 0.3s ease-in-out;
+}
+
+/* Crop Images */
+.infinity-gallery[data-crop-images="true"] .infinity-gallery-image {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
 }
 
 .infinity-gallery-item {

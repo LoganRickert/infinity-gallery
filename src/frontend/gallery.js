@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     galleries.forEach(gallery => {
         const maxPerRow = parseInt(gallery.dataset.maxPerRow, 10) || 3;
-        setupGallery(gallery, maxPerRow);
+        const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
+        setupGallery(gallery, maxPerRow, gutterSize);
     });
 
     setTimeout(() => {
@@ -14,12 +15,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 50);
 });
 
-function setupGallery(gallery, maxPerRow) {
-    applyResponsiveGrid(gallery, maxPerRow);
+function setupGallery(gallery, maxPerRow, gutterSize) {
+    applyResponsiveGrid(gallery, maxPerRow, gutterSize);
     lazyLoadImages(gallery);
 }
 
-function applyResponsiveGrid(gallery, maxPerRow) {
+function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
     function calculateColumns() {
         const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
         
@@ -30,6 +31,8 @@ function applyResponsiveGrid(gallery, maxPerRow) {
             if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
             return 3; // Otherwise, use 3 columns
         }
+
+        gallery.style.gap = `${gutterSize}px`;
 
         // Dynamically scale images per row based on maxPerRow
         return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));

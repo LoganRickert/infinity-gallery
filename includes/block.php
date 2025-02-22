@@ -65,6 +65,9 @@ function infinity_gallery_render_callback($attributes)
     $images = $attributes['images'];
     $imageSize = $attributes['imageSize'] ?? 'large';
     $maxPerRow = $attributes['maxPerRow'] ?? 4;
+    $gutterSize = $attributes['gutterSize'] ?? 10;
+    $cropImages = $attributes['cropImages'] ?? false;
+    $enableMasonry = $attributes['enableMasonry'] ?? false;
 
     static $gallery_index = 0;
 
@@ -74,7 +77,11 @@ function infinity_gallery_render_callback($attributes)
 
     ob_start();
 ?>
-    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-max-per-row="<?php echo esc_attr($maxPerRow); ?>" data-gallery-id="<?php echo esc_attr($gallery_id) ?>">
+    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>" data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
+        data-max-per-row="<?php echo esc_attr($maxPerRow); ?>"
+        data-gutter-size="<?php echo esc_attr($gutterSize); ?>"
+        data-crop-images="<?php echo esc_attr($cropImages ? 'true' : 'false'); ?>"
+        data-enable-masonry="<?php echo esc_attr($enableMasonry ? 'true' : 'false'); ?>">
         <?php foreach ($images as $index => $image) :
             // Ensure correct size selection
             $selectedSrc = isset($image['sizes'][$imageSize]['url']) ? $image['sizes'][$imageSize]['url'] : $image['url'];
@@ -85,7 +92,7 @@ function infinity_gallery_render_callback($attributes)
         ?>
             <figure class="infinity-gallery-item">
                 <picture>
-                    <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
+                    <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                         alt="<?php echo esc_attr($image['alt'] ?? 'Gallery Image'); ?>"
                         class="infinity-gallery-image"
                         loading="lazy"
@@ -132,38 +139,40 @@ function infinity_gallery_render_callback($attributes)
         </div>
     </div>
     <script>
-    (function() {
-        document.body.scrollTop = document.documentElement.scrollTop = 0;
+        (function() {
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-        var gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
-        if (!gallery) return;
+            const gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
+            if (!gallery) return;
 
-        // Read the correct maxPerRow from the data attribute
-        var maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
-        const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
+            // Read the correct maxPerRow from the data attribute
+            const maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
+            const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
+            const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
 
-        // Dynamic scaling function
-        function calculateColumns() {
-            if (screenWidth < 768) return 1; // Always 1 image on mobile
+            // Dynamic scaling function
+            function calculateColumns() {
+                if (screenWidth < 768) return 1; // Always 1 image on mobile
 
-            if (maxPerRow <= 3) {
-                if (screenWidth < 1100) return 1; // 1 column under 1300px
-                if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
-                return 3; // Otherwise, use 3 columns
+                if (maxPerRow <= 3) {
+                    if (screenWidth < 1100) return 1; // 1 column under 1300px
+                    if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
+                    return 3; // Otherwise, use 3 columns
+                }
+
+                // Scale columns based on screen width and maxPerRow
+                return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
             }
 
-            // Scale columns based on screen width and maxPerRow
-            return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
-        }
+            const newColumns = calculateColumns();
 
-        var newColumns = calculateColumns();
-
-        // Set columns dynamically on initial load
-        gallery.dataset.maxPerRow = maxPerRow;
-        gallery.style.display = "grid";
-        gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
-    })();
-</script>
+            // Set columns dynamically on initial load
+            gallery.dataset.maxPerRow = maxPerRow;
+            gallery.style.display = "grid";
+            gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
+            gallery.style.gap = `${gutterSize}px`;
+        })();
+    </script>
 <?php
     return ob_get_clean();
 }
