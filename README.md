@@ -110,6 +110,8 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 ---
 
 ## 📝 **Changelog**  
+### 1.7.0
+* Refactored structure
 
 ### v1.6.0
 * Fixed some potential security issues.
