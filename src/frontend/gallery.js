@@ -27,7 +27,7 @@ function applyResponsiveGrid(gallery, maxPerRow) {
 
         if (maxPerRow <= 3) {
             if (screenWidth < 1100) return 1; // 1 column under 1300px
-            if (screenWidth < 1600) return 2; // 2 columns under 1700px
+            if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
             return 3; // Otherwise, use 3 columns
         }
 
@@ -36,7 +36,6 @@ function applyResponsiveGrid(gallery, maxPerRow) {
     }
 
     function updateGrid() {
-        console.log("Calling Update Grid", maxPerRow)
         if (!gallery) return;
 
         // Ensure maxPerRow is respected
@@ -44,7 +43,6 @@ function applyResponsiveGrid(gallery, maxPerRow) {
 
         // Only update if the number of columns actually changes
         if (gallery.dataset.currentColumns !== String(newColumns)) {
-            console.log(`Updating columns to: ${newColumns}`);
             gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
             gallery.dataset.currentColumns = String(newColumns);
         }

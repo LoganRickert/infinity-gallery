@@ -148,7 +148,7 @@ function infinity_gallery_render_callback($attributes)
 
             if (maxPerRow <= 3) {
                 if (screenWidth < 1100) return 1; // 1 column under 1300px
-                if (screenWidth < 1600) return 2; // 2 columns under 1700px
+                if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
                 return 3; // Otherwise, use 3 columns
             }
 
