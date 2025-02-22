@@ -4,6 +4,10 @@ Infinity Gallery is a lightweight, high-performance WordPress gallery plugin des
 
 ![Gutenberg Block Photo](./.github/infinity-gallery-preview-1.jpg)
 
+![Lightbox](./.github/infinity-gallery-preview-2.jpg)
+
+![Lightbox Metadata](./.github/infinity-gallery-preview-3.jpg)
+
 ---
 
 ## 🚀 **Features**  
