@@ -18,7 +18,6 @@ async function packagePlugin() {
         await fs.copy('readme.txt', path.join(pluginFolder, 'readme.txt'));
         await fs.copy('includes', path.join(pluginFolder, 'includes'));
         await fs.copy('build', path.join(pluginFolder, 'build'));
-        await fs.copy('assets', path.join(pluginFolder, 'assets'));
 
         console.log('🗜️ Creating ZIP package...');
         const output = fs.createWriteStream(zipFile);
