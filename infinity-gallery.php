@@ -7,6 +7,8 @@
  * License: Apache License 2.0
  * License URI: https://www.apache.org/licenses/LICENSE-2.0
  * Text Domain: infinity-gallery
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
  */
 
 if (!defined('ABSPATH')) {
