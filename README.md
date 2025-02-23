@@ -109,7 +109,13 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ---
 
-## 📝 **Changelog**  
+## 📝 **Changelog**
+
+### 1.8.0
+* Removed console logs
+* Changed how downloading images worked.
+
+
 ### 1.7.0
 * Refactored structure
 
