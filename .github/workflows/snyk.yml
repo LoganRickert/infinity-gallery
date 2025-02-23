@@ -40,12 +40,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Run Snyk Code Analysis for includes/block.php
-        run: snyk code test includes/block.php
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Run Snyk Code Analysis for includes/enqueue.php
-        run: snyk code test includes/enqueue.php
+      - name: Run Snyk Code Analysis for includes
+        run: snyk code test includes
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
