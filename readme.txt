@@ -3,7 +3,7 @@ Contributors: Logan Rickert
 Tags: gallery, lazy load, infinite scroll, images
 Requires at least: 5.6
 Tested up to: 6.7.2
-Stable tag: 1.8.0
+Stable tag: 1.10.0
 License: Apache License 2.0
 License URI: https://www.apache.org/licenses/LICENSE-2.0
 Github URI: https://github.com/LoganRickert/infinity-gallery
@@ -17,6 +17,15 @@ InfinityGallery is a high-performance, lazy-loaded image gallery for WordPress. 
 3. Insert a gallery block in the editor and select images.
 
 == Changelog ==
+= 1.10.0 =
+
+* Switched to using blocks.json
+* Added ability to customize the forced height of the images
+* Added basic caching
+* Added Share icons option. Can be configured to share the lightbox URL, the full width image, or the selected image size.
+* Added ability to change on image click. You can now have it open a lightbox, open in a new tab, or do nothing.
+* Added caption settings. It pulls from the Wordpress Caption field. You can limit the max number of characters if desired and you can customize the font size, text alignment, font color, and background color (including transparency).
+
 = 1.8.0 =
 * Removed console logs
 * Changed how downloading images worked.
