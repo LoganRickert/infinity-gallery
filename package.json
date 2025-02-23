@@ -1,6 +1,6 @@
 {
   "name": "infinity-gallery",
-  "version": "1.8.0",
+  "version": "1.10.0",
   "main": "index.js",
   "scripts": {
     "prebuild": "node update-version.js",
@@ -23,5 +23,9 @@
     "file-saver": "^2.0.5",
     "intersection-observer": "^0.12.2",
     "lodash": "^4.17.21"
-  }
+  },
+	"browserslist": [
+		"last 3 versions",
+		"> 1%"
+	]
 }

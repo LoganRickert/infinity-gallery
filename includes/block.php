@@ -8,63 +8,17 @@ if (!defined('INFINITY_GALLERY_VERSION')) {
     define('INFINITY_GALLERY_VERSION', '1.0.0');
 }
 
-function infinity_gallery_register_block()
-{
-    // Register the block editor script and style
-    wp_register_script(
-        'infinity-gallery-editor-script',
-        plugins_url('../public/index.js', __FILE__),
-        array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
-        INFINITY_GALLERY_VERSION,
-        true
-    );
-
-    wp_register_style(
-        'infinity-gallery-editor-style',
-        plugins_url('../public/index.css', __FILE__),
-        array(),
-        INFINITY_GALLERY_VERSION
-    );
-
-    register_block_type('infinity/gallery', array(
-        'editor_script'   => 'infinity-gallery-editor-script',
-        'editor_style'    => 'infinity-gallery-editor-style',
-        'render_callback' => 'infinity_gallery_render_callback',
-        'attributes'      => array(
-            'images' => array(
-                'type'    => 'array',
-                'default' => array(),
-                'items'   => array(
-                    'type'       => 'object',
-                    'properties' => array(
-                        'id'           => array('type' => 'number'),
-                        'url'          => array('type' => 'string'),
-                        'alt'          => array('type' => 'string'),
-                        'caption'      => array('type' => 'string'),
-                        'description'  => array('type' => 'string'),
-                        'fullUrl'      => array('type' => 'string'),
-                        'thumbnailUrl' => array('type' => 'string'),
-                        'sizes'        => array('type' => 'object'),
-                    ),
-                ),
-            ),
-            'maxPerRow'       => array('type' => 'number', 'default' => 4),
-            'imageSize'       => array('type' => 'string', 'default' => 'large'),
-            'gutterSize'      => array('type' => 'number', 'default' => 10),
-            'cropImages'      => array('type' => 'boolean', 'default' => false),
-            'hideInfo'        => array('type' => 'boolean', 'default' => false),
-            'hideDownload'    => array('type' => 'boolean', 'default' => false),
-            'filterType'      => array('type' => 'string', 'default' => 'none'),
-            'filterStrength'  => array('type' => 'number', 'default' => 100),
-        ),
-    ));
-}
-add_action('init', 'infinity_gallery_register_block');
-
 function infinity_gallery_render_callback($attributes)
 {
     if (empty($attributes['images'])) {
         return '<p>No images selected.</p>';
+    }
+
+    $cache_key = 'infinity_gallery_' . md5(json_encode($attributes));
+    $cached_output = get_transient($cache_key);
+
+    if ($cached_output !== false) {
+        return $cached_output;
     }
 
     $images = $attributes['images'];
@@ -207,5 +161,10 @@ function infinity_gallery_render_callback($attributes)
         })();
     </script>
 <?php
-    return ob_get_clean();
+    $output = ob_get_clean();
+    
+    // Cache output for 1 hour
+    set_transient($cache_key, $output, HOUR_IN_SECONDS);
+
+    return $output;
 }

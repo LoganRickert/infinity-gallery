@@ -1,5 +1,5 @@
 import { registerBlockType } from '@wordpress/blocks';
-import { MediaUpload, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, MediaUpload, InspectorControls } from '@wordpress/block-editor';
 import { Button, PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
@@ -42,6 +42,7 @@ registerBlockType('infinity/gallery', {
         filterStrength: { type: 'number', default: 100 }
     },
     edit: ({ attributes, setAttributes }) => {
+        const blockProps = useBlockProps();
         const { images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload, filterType, filterStrength } = attributes;
         // Function to sort images numerically & alphabetically
         const sortImagesByFilename = (images) => {
@@ -95,7 +96,7 @@ registerBlockType('infinity/gallery', {
         }
 
         return (
-            <>
+            <div {...blockProps}>
                 <InspectorControls>
                     <PanelBody title={__('Gallery Settings', 'infinity-gallery')}>
                         <RangeControl
@@ -192,7 +193,7 @@ registerBlockType('infinity/gallery', {
                         </Button>
                     )}
                 </div>
-            </>
+            </div>
         );
     },
     save: () => {

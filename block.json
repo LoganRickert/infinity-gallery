@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "infinity/gallery",
+    "version": "1.10.0",
+    "title": "Infinity Gallery",
+    "category": "media",
+    "icon": "format-gallery",
+    "description": "A high-performance, infinite-scrolling gallery with lightbox support.",
+    "keywords": [
+        "gallery",
+        "photos",
+        "images",
+        "infinite",
+        "lightbox"
+    ],
+    "textdomain": "infinity-gallery",
+    "editorScript": "file:./public/index.js",
+    "editorStyle": "file:./public/index.css",
+    "style": "file:./public/gallery.css",
+    "render": "file:./includes/block.php",
+    "attributes": {
+        "images": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "alt": {
+                        "type": "string"
+                    },
+                    "caption": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "fullUrl": {
+                        "type": "string"
+                    },
+                    "thumbnailUrl": {
+                        "type": "string"
+                    },
+                    "sizes": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "maxPerRow": {
+            "type": "number",
+            "default": 4
+        },
+        "imageSize": {
+            "type": "string",
+            "default": "large"
+        },
+        "gutterSize": {
+            "type": "number",
+            "default": 10
+        },
+        "cropImages": {
+            "type": "boolean",
+            "default": false
+        },
+        "hideInfo": {
+            "type": "boolean",
+            "default": false
+        },
+        "hideDownload": {
+            "type": "boolean",
+            "default": false
+        },
+        "filterType": {
+            "type": "string",
+            "default": "none"
+        },
+        "filterStrength": {
+            "type": "number",
+            "default": 100
+        }
+    },
+    "supports": {
+        "align": true,
+        "html": false
+    }
+}
