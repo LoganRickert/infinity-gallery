@@ -18,7 +18,8 @@ function setupGallery(gallery, maxPerRow, gutterSize) {
 
 function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
     function calculateColumns() {
-        const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
+        const containerWidth = gallery.parentElement ? gallery.parentElement.offsetWidth : window.innerWidth;
+        const screenWidth = Math.min(containerWidth, 2560);
         
         if (screenWidth < 768) return 1; // Always 1 image on mobile
 

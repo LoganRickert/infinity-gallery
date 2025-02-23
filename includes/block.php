@@ -115,7 +115,9 @@ function infinity_gallery_render_callback($attributes)
             // Read the correct maxPerRow from the data attribute
             const maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
             const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
-            const screenWidth = Math.min(window.innerWidth, 2560); // Limit at 1440p (2560px)
+
+            const containerWidth = gallery.parentElement ? gallery.parentElement.offsetWidth : window.innerWidth;
+            const screenWidth = Math.min(containerWidth, 2560);
 
             // Dynamic scaling function
             function calculateColumns() {
