@@ -2,6 +2,7 @@
 /**
  * Plugin Name: InfinityGallery
  * Description: A high-performance, lazy-loaded gallery plugin for WordPress.
+ * Short Description: A high-performance, lazy-loaded gallery plugin for WordPress.
  * Version: 1.8.0
  * Author: Logan Rickert
  * License: Apache License 2.0
@@ -19,8 +20,6 @@ if (!defined('ABSPATH')) {
 define('INFINITY_GALLERY_VERSION', '1.8.0');
 define('INFINITY_GALLERY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('INFINITY_GALLERY_PLUGIN_URL', plugin_dir_url(__FILE__));
-
-error_log('InfinityGallery block registered');
 
 // Include necessary files
 require_once INFINITY_GALLERY_PLUGIN_DIR . 'includes/block.php';
