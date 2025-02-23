@@ -1,6 +1,7 @@
 
 import EXIF from "exif-js";
 import debounce from "lodash/debounce";
+import { saveAs } from "file-saver";
 
 document.addEventListener("DOMContentLoaded", function () {
     let currentIndex = 0;
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (filterType !== "none") {
             let filterSign = "%";
-            
+
             if (filterType === "blur") {
                 filterSign = "px";
             } else if (filterType === "hue-rotate") {
@@ -50,24 +51,24 @@ document.addEventListener("DOMContentLoaded", function () {
             lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             lightboxImg.style.opacity = 0.25;
             document.querySelector("#lightbox").classList.add("open");
-            
+
             const viewportWidth = window.innerWidth * 0.9; // 90% of viewport width
             const viewportHeight = window.innerHeight * 0.9; // 90% of viewport height
-    
+
             const newImg = new Image();
             newImg.src = image.dataset.full;
-    
+
             newImg.onload = () => {
                 lightboxImg.src = newImg.src; // Replace with actual image
                 lightboxImg.style.opacity = 1;
 
                 const imgWidth = newImg.width;
                 const imgHeight = newImg.height;
-    
+
                 const widthRatio = viewportWidth / imgWidth;
                 const heightRatio = viewportHeight / imgHeight;
                 const scaleFactor = Math.min(widthRatio, heightRatio); // Choose the smallest factor to fit
-    
+
                 lightboxImg.style.width = `${imgWidth * scaleFactor}px`;
                 lightboxImg.style.height = `${imgHeight * scaleFactor}px`;
 
@@ -118,11 +119,11 @@ document.addEventListener("DOMContentLoaded", function () {
             console.warn("Image not fully loaded for EXIF extraction.");
             return;
         }
-    
+
         EXIF.getData(newImg, function () {
             console.log("EXIF?", EXIF, this);
             const metadata = {};
-    
+
             // Extract Camera Make & Model
             const make = EXIF.getTag(this, "Make");
             const model = EXIF.getTag(this, "Model");
@@ -134,36 +135,36 @@ document.addEventListener("DOMContentLoaded", function () {
                     metadata.camera = [make, model].filter(Boolean).join(" ");
                 }
             }
-    
+
             // Extract ISO
             const iso = EXIF.getTag(this, "ISOSpeedRatings");
             if (iso) metadata.ISO = iso;
-    
+
             // Extract Focal Length
             const focalLength = EXIF.getTag(this, "FocalLength");
             if (focalLength) metadata.focal_length = `${focalLength}mm`;
-    
+
             // Extract Aperture
             const aperture = EXIF.getTag(this, "FNumber");
             if (aperture) metadata.aperture = `f/${aperture}`;
-    
+
             // Extract Exposure Time (Convert 0.00025 to 1/4000 sec)
             const exposureTime = EXIF.getTag(this, "ExposureTime");
             if (exposureTime) {
                 metadata.exposure = formatExposureTime(exposureTime);
             }
-    
+
             // Extract IPTC Data (Credit & Copyright)
             const iptcData = EXIF.getTag(this, "IPTC") || {};
             if (iptcData["Credit"]) metadata.credit = iptcData["Credit"];
             if (iptcData["Copyright"]) metadata.copyright = iptcData["Copyright"];
-    
+
             // Extract and Convert DateTime to Local Timezone
             const dateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
             if (dateTimeOriginal) {
                 metadata.dateTime = formatDateTime(dateTimeOriginal);
             }
-    
+
             displayMetadata(metadata);
         });
     }
@@ -187,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function displayMetadata(metadata) {
         let metaText = "";
-    
+
         if (metadata.camera) metaText += `<strong>Camera:</strong> ${metadata.camera}<br>`;
         if (metadata.ISO) metaText += `<strong>ISO:</strong> ${metadata.ISO}<br>`;
         if (metadata.focal_length) metaText += `<strong>Focal Length:</strong> ${metadata.focal_length}<br>`;
@@ -196,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (metadata.dateTime) metaText += `<strong>Date Taken:</strong> ${metadata.dateTime}<br>`;
         if (metadata.credit) metaText += `<strong>Credit:</strong> ${metadata.credit}<br>`;
         if (metadata.copyright) metaText += `<strong>Copyright:</strong> ${metadata.copyright}<br>`;
-    
+
         document.querySelector("#meta-info").innerHTML = metaText || "<strong>No metadata available</strong>";
     }
 
@@ -229,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Hide lightbox from assistive tech
         document.querySelector("#lightbox").setAttribute("aria-hidden", "true");
         document.querySelector("#lightbox").setAttribute("inert", "true");
-        
+
         const lightboxImg = document.querySelector("#lightbox-img");
         lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
         lightboxImg.style.filter = "none"; // ✅ Reset filter when closing
@@ -257,41 +258,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function downloadImage() {
         const img = document.querySelector("#lightbox-img");
-        
         if (!img) {
             console.error("Image element not found.");
             return;
         }
     
-        const fullUrl = img.src;
-        let filename = "download.jpg"; // Default name
+        let fullUrl = img.src;
+        let filename = "download.jpg";
     
-        // Ensure images[currentIndex] exists
-        if (typeof images !== "undefined" && images[currentIndex] && images[currentIndex].dataset.filename) {
-            filename = images[currentIndex].dataset.filename;
+        // Sanitize filename (remove unsafe characters)
+        if (typeof images !== "undefined" && images[currentIndex]?.dataset?.filename) {
+            filename = images[currentIndex].dataset.filename.replace(/[^a-zA-Z0-9.\-_]/g, "_");
         }
     
-        // Handle Cross-Origin Issues
-        fetch(fullUrl, { mode: 'no-cors' })
-            .then(response => response.blob())
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);
-                const link = document.createElement("a");
+        try {
+            const safeUrl = new URL(fullUrl, document.baseURI);
     
-                link.href = blobUrl;
-                link.download = filename;
-                link.rel = "noopener noreferrer"; // Security best practice
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            // Allow only HTTP & HTTPS protocols
+            if (!/^https?:$/.test(safeUrl.protocol)) {
+                throw new Error("Invalid URL protocol");
+            }
     
-                // Revoke the object URL after download
-                URL.revokeObjectURL(blobUrl);
-            })
-            .catch(error => console.error("Failed to download image:", error));
+            // Fetch the image and save it securely
+            fetch(safeUrl.href)
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not OK");
+                    return response.blob();
+                })
+                .then(blob => {
+                    saveAs(blob, filename); // Securely save file using FileSaver.js
+                })
+                .catch(error => console.error("Failed to download image:", error));
+    
+        } catch (error) {
+            console.error("Invalid image URL:", error);
+        }
     }
     
-
     function updateLightboxButtons() {
         document.querySelector("#lightbox-prev").style.display = currentIndex === 0 ? "none" : "block";
         document.querySelector("#lightbox-next").style.display = currentIndex === images.length - 1 ? "none" : "block";
@@ -389,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.overflow = 'hidden';
         document.body.style.height = '100vh'; // Ensures no vertical movement
     }
-    
+
     function enableScroll() {
         document.body.style.overflow = '';
         document.body.style.height = '';

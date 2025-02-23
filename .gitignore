@@ -25,3 +25,4 @@ Thumbs.db
 # Ignore local environment configuration
 .env
 .env.local
+.dccache

@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "exif-js": "^2.3.0",
+    "file-saver": "^2.0.5",
     "intersection-observer": "^0.12.2",
     "lodash": "^4.17.21"
   }
