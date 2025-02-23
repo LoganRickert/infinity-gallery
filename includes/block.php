@@ -30,12 +30,10 @@ function infinity_gallery_render_callback($attributes)
     $hideDownload = boolval($attributes['hideDownload'] ?? false);
     $filterType = sanitize_text_field($attributes['filterType'] ?? 'none');
     $filterStrength = intval($attributes['filterStrength'] ?? 100);
-
-    static $gallery_index = 0;
+    $galleryKey = sanitize_title($attributes['galleryKey'] ?? 'gallery');
 
     // Generate a stable unique ID based on post ID + block position
-    $gallery_id = "g" . $gallery_index; // Unique per page & post
-    $gallery_index++;
+    $gallery_id = $galleryKey; // Unique per page & post
 
     ob_start();
 ?>

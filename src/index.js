@@ -1,6 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
+import { useSelect } from '@wordpress/data';
 import { useBlockProps, MediaUpload, InspectorControls } from '@wordpress/block-editor';
-import { Button, PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { Button, TextControl, PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
 
@@ -39,11 +40,47 @@ registerBlockType('infinity/gallery', {
         hideInfo: { type: 'boolean', default: false },
         hideDownload: { type: 'boolean', default: false },
         filterType: { type: 'string', default: 'none' },
-        filterStrength: { type: 'number', default: 100 }
+        filterStrength: { type: 'number', default: 100 },
+        galleryKey: { type: 'string', default: 'gallery_' }
     },
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps();
-        const { images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload, filterType, filterStrength } = attributes;
+        const { galleryKey, images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload, filterType, filterStrength } = attributes;
+        
+        // Fetch all Infinity Gallery blocks in the current post
+        const existingGalleries = useSelect((select) => {
+            return select('core/block-editor').getBlocks().filter(block => block.name === 'infinity/gallery');
+        }, []);
+
+        // Function to generate a unique gallery key
+        const generateUniqueGalleryKey = () => {
+            const baseKey = 'gallery'; // Default base name
+            let counter = 1;
+
+            // Get all existing gallery keys
+            const existingKeys = existingGalleries.map(block => block.attributes.galleryKey);
+
+            if (existingKeys.length === 0) {
+                return baseKey;
+            }
+
+            // Find next available number (gallery, gallery-2, gallery-3, etc.)
+            let newKey = baseKey;
+            
+            while (existingKeys.includes(newKey)) {
+                counter++;
+                newKey = `${baseKey}-${counter}`;
+            }
+
+            return newKey;
+        };
+
+        // If the galleryKey is empty (first time block is inserted), assign a unique one
+        if (galleryKey === "gallery_") {
+            const newKey = generateUniqueGalleryKey();
+            setAttributes({ galleryKey: newKey });
+        }
+
         // Function to sort images numerically & alphabetically
         const sortImagesByFilename = (images) => {
             return images.sort((a, b) => {
@@ -78,7 +115,7 @@ registerBlockType('infinity/gallery', {
                     description: image.description,
                     fullUrl: image.sizes?.full?.url || image.url, // Full size for download
                     thumbnailUrl: image.sizes?.thumbnail?.url || image.url, // Smallest version
-                    sizes: image.sizes || {},
+                    sizes: image.sizes || {}
                 }))
             });
         };
@@ -99,6 +136,12 @@ registerBlockType('infinity/gallery', {
             <div {...blockProps}>
                 <InspectorControls>
                     <PanelBody title={__('Gallery Settings', 'infinity-gallery')}>
+                        <TextControl
+                            label={__('Gallery Key', 'infinity-gallery')}
+                            value={galleryKey}
+                            onChange={(value) => setAttributes({ galleryKey: value })}
+                            help={__('Used for stable permalinks and indexing. Must be unique if you have more than 1 gallery on a post.', 'infinity-gallery')}
+                        />
                         <RangeControl
                             label={__('Max Images Per Row', 'infinity-gallery')}
                             value={maxPerRow}

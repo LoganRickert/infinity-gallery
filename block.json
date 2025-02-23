@@ -84,6 +84,10 @@
         "filterStrength": {
             "type": "number",
             "default": 100
+        },
+        "galleryKey": {
+            "type": "string",
+            "default": "gallery"
         }
     },
     "supports": {

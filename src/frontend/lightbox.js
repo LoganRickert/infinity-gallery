@@ -196,17 +196,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadFromURL() {
         const hash = window.location.hash;
-        const match = hash.match(/#(g[0-9]+)-(\d+)/); // Match gallery ID & image index
-
+        const match = hash.match(/#([\w-]+)-(\d+)/); // Match {anything}-{number}
+    
         if (match) {
-            const gallery = match[1]; // Extract gallery ID
+            const galleryKey = match[1]; // Extract gallery key
             const imageIndex = parseInt(match[2], 10); // Extract image index
-
+    
             // Find all images in the matching gallery
-            const imagesInGallery = [...document.querySelectorAll(`[data-gallery-id="${gallery}"] img`)];
-
+            const imagesInGallery = [...document.querySelectorAll(`[data-gallery-id="${galleryKey}"] img`)];
+    
             if (imagesInGallery.length > 0 && imageIndex >= 0 && imageIndex < imagesInGallery.length) {
-                openLightbox(imageIndex, gallery); // Open the correct image
+                openLightbox(imageIndex, galleryKey); // Open the correct image
             }
         }
     }
