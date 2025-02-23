@@ -15,6 +15,7 @@ async function packagePlugin() {
 
         console.log('📂 Copying necessary files...');
         await fs.copy('infinity-gallery.php', path.join(pluginFolder, 'infinity-gallery.php'));
+        await fs.copy('block.json', path.join(pluginFolder, 'block.json'));
         await fs.copy('index.php', path.join(pluginFolder, 'index.php'));
         await fs.copy('readme.txt', path.join(pluginFolder, 'readme.txt'));
         await fs.copy('includes', path.join(pluginFolder, 'includes'));

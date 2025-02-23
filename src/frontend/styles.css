@@ -11,7 +11,7 @@
 /* Crop Images */
 .infinity-gallery[data-crop-images="true"] .infinity-gallery-image {
     object-fit: cover;
-    height: 100%;
+    height: var(--crop-image-height, 250px);
     width: 100%;
 }
 
@@ -46,8 +46,6 @@
     font-size: 14px;
     color: #fff;
     background-color: rgb(0, 0, 0);
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
 }
 
 /* Caption On Image */
@@ -59,6 +57,49 @@
     background-color: rgb(0, 0, 0);
     color: #fff;
     padding: 8px 16px;
+}
+
+.infinity-gallery-share {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: rgba(11, 11, 11, 1);
+    padding: 6px 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 40px;
+}
+
+.infinity-gallery-share span.dashicons {
+    font-size: 18px;
+    color: #cccccc;
+    margin-left: 10px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.infinity-gallery-share a {
+    text-decoration: none;
+}
+
+.infinity-gallery-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.infinity-gallery-caption.below-image {
+    padding: 8px;
+    text-align: center;
+}
+
+.infinity-gallery-caption.on-image {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px;
 }
 
 /* Lightbox Overlay */

@@ -8,6 +8,8 @@ Infinity Gallery is a lightweight, high-performance WordPress gallery plugin des
 
 ![Lightbox Metadata](./.github/infinity-gallery-preview-3.jpg)
 
+![Social Share Buttons](./.github/infinity-gallery-preview-4.jpg)
+
 ---
 
 ## 🚀 **Features**  
@@ -21,7 +23,12 @@ Infinity Gallery is a lightweight, high-performance WordPress gallery plugin des
 - **Responsive Layout**: Adjusts the number of images per row dynamically.  
 - **Gutenberg Block Support**: Easily add galleries via the WordPress block editor.  
 - **Customizable Lightbox Controls**: Hide the **Info** and **Download** buttons via block settings.  
-- **CSS Filters for Images**: Apply effects like **grayscale, sepia, blur, contrast, hue-rotate, and more** with adjustable strength.  
+- **CSS Filters for Images**: Apply effects like **grayscale, sepia, blur, contrast, hue-rotate, and more** with adjustable strength.
+- **Share Buttons**: Enable share button icons at the bottom of each image. Supports generic link copy, facebook post, Pinterest, Reddit, and WhatsApp.
+- **Image Caption**: Enable viewing the caption of an image. It can be on top of the image at the bottom or directly below the image. The color of the text and background are both configurable and support transparency.
+- **Caching**: Supports basic wordpress caching
+- **Gallery Keyword**: Allows you to configure what the keyword for the gallery is when someone opens an image in the lightbox.
+- **Configure On Click Action**: If you are not happy with a lightbox opening, you can change the settings to open in a new tab or do nothing.
 
 ---
 
@@ -110,6 +117,19 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 ---
 
 ## 📝 **Changelog**
+
+### 1.10.0
+
+* Switched to using blocks.json
+* Added ability to customize the forced height of the images
+* Added basic caching
+* Added Share icons option. Can be configured to share the lightbox URL, the full width image, or the selected image size.
+* Added ability to change on image click. You can now have it open a lightbox, open in a new tab, or do nothing.
+* Added caption settings. It pulls from the Wordpress Caption field. You can limit the max number of characters if desired and you can customize the font size, text alignment, font color, and background color (including transparency).
+
+### 1.9.0
+
+* Refactored code
 
 ### 1.8.0
 * Removed console logs

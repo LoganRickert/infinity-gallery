@@ -69,6 +69,10 @@
             "type": "boolean",
             "default": false
         },
+        "cropImageHeight": {
+            "type": "number",
+            "default": 250
+        },
         "hideInfo": {
             "type": "boolean",
             "default": false
@@ -125,11 +129,11 @@
         },
         "captionFontColor": {
             "type": "string",
-            "default": "#000000"
+            "default": "#ffffff"
         },
         "captionBackgroundColor": {
             "type": "string",
-            "default": "#ffffff"
+            "default": "#111111"
         },
         "shareOption": {
             "type": "string",
@@ -137,6 +141,7 @@
             "enum": [
                 "None",
                 "Image Full URL",
+                "Image Selected URL",
                 "Lightbox URL"
             ]
         },

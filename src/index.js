@@ -38,6 +38,7 @@ const CAPTION_POSITIONS = [
 const SHARE_OPTIONS = [
     { label: 'None', value: 'None' },
     { label: 'Image Full URL', value: 'Image Full URL' },
+    { label: 'Image Selected URL', value: 'Image Selected URL' },
     { label: 'Lightbox URL', value: 'Lightbox URL' }
 ];
 
@@ -58,6 +59,7 @@ registerBlockType('infinity/gallery', {
         imageSize: { type: 'string', default: 'large' },
         gutterSize: { type: 'number', default: 10 },
         cropImages: { type: 'boolean', default: false },
+        cropImageHeight: { type: 'number', default: 250 },
         hideInfo: { type: 'boolean', default: false },
         hideDownload: { type: 'boolean', default: false },
         filterType: { type: 'string', default: 'none' },
@@ -68,8 +70,8 @@ registerBlockType('infinity/gallery', {
         captionTextAlign: { type: 'string', default: 'center' },
         captionCharacterLimit: { type: 'number', default: 100 },
         captionFontSize: { type: 'number', default: 16 },
-        captionFontColor: { type: 'string', default: '#000000' },
-        captionBackgroundColor: { type: 'string', default: '#ffffff' },
+        captionFontColor: { type: 'string', default: '#ffffff' },
+        captionBackgroundColor: { type: 'string', default: '#111111' },
         shareOption: { type: 'string', default: 'None' },
         onImageClick: { type: 'string', default: 'Lightbox' },
         disableCaching: { type: 'boolean', default: false }
@@ -79,7 +81,7 @@ registerBlockType('infinity/gallery', {
         const { galleryKey, images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload,
             filterType, filterStrength, captionPosition, limitCaptionCharacters, captionCharacterLimit,
             captionFontSize, captionFontColor, captionBackgroundColor, shareOption, onImageClick,
-            captionTextAlign, disableCaching } = attributes;
+            captionTextAlign, disableCaching, cropImageHeight } = attributes;
 
         // Fetch all Infinity Gallery blocks in the current post
         const existingGalleries = useSelect((select) => {
@@ -201,6 +203,13 @@ registerBlockType('infinity/gallery', {
                             checked={cropImages}
                             onChange={(value) => setAttributes({ cropImages: value })}
                         />
+                        {cropImages && <RangeControl
+                            label={__('Crop Image Height (px)', 'infinity-gallery')}
+                            value={cropImageHeight}
+                            onChange={(value) => setAttributes({ cropImageHeight: value })}
+                            min={10}
+                            max={1000}
+                        />}
                         <ToggleControl
                             label={__('Disable Caching', 'infinity-gallery')}
                             checked={disableCaching}
