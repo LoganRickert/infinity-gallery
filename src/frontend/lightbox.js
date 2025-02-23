@@ -11,14 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let lastClickTime = 0;
 
     function openLightbox(index, galleryId) {
-        console.log("Triggering Open Lightbox");
         disableScroll();
 
         currentIndex = index;
         galleryID = galleryId;
         const gallery = document.querySelector(`[data-gallery-id="${galleryId}"]`);
-
-        console.log("Gallery", gallery, gallery.dataset);
 
         images = [...gallery.querySelectorAll("img")];
         const image = images[currentIndex];
@@ -44,8 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         lightboxImg.style.filter = filterValue; // Apply filter dynamically
-
-        console.log("Src:", lightboxImg.src);
 
         if (lightboxImg.src !== image.dataset.full) {
             lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
@@ -113,7 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function extractExifMetadata(newImg) {
-        console.log("Complete?", newImg.complete)
         // Ensure the image has fully loaded before reading EXIF metadata
         if (!newImg || !newImg.complete) {
             console.warn("Image not fully loaded for EXIF extraction.");
@@ -121,7 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         EXIF.getData(newImg, function () {
-            console.log("EXIF?", EXIF, this);
             const metadata = {};
 
             // Extract Camera Make & Model
