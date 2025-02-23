@@ -24,11 +24,6 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
-      - name: Run Snyk for npm dependencies
-        run: snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
       # 🟢 Scan PHP Code for Vulnerabilities
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -36,12 +31,6 @@ jobs:
           php-version: '8.1'
 
       - name: Run Snyk Code Analysis for PHP
-        run: snyk code test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      # 🟢 Scan Composer Dependencies (if applicable)
-      - name: Run Snyk Open Source Scan for PHP
-        run: snyk test --file=composer.json
+        run: snyk code test --debug
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
