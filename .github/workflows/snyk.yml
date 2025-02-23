@@ -24,6 +24,11 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
+      - name: Run Snyk Code Analysis for PHP
+        run: snyk code test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
       # 🟢 Scan PHP Code for Vulnerabilities
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -31,6 +36,6 @@ jobs:
           php-version: '8.1'
 
       - name: Run Snyk Code Analysis for PHP
-        run: snyk code test --debug
+        run: snyk code test infinity-gallery.php includes/block.php includes/enqueue.php
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
