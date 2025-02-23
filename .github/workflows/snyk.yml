@@ -35,7 +35,17 @@ jobs:
         with:
           php-version: '8.1'
 
-      - name: Run Snyk Code Analysis for PHP
-        run: snyk code test infinity-gallery.php includes/block.php includes/enqueue.php
+      - name: Run Snyk Code Analysis for infinity-gallery.php
+        run: snyk code test infinity-gallery.php
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Code Analysis for includes/block.php
+        run: snyk code test includes/block.php
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Code Analysis for includes/enqueue.php
+        run: snyk code test includes/enqueue.php
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
