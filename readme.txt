@@ -6,6 +6,7 @@ Tested up to: 6.7.2
 Stable tag: 1.8.0
 License: Apache License 2.0
 License URI: https://www.apache.org/licenses/LICENSE-2.0
+Github URI: https://github.com/LoganRickert/infinity-gallery
 
 == Description ==
 InfinityGallery is a high-performance, lazy-loaded image gallery for WordPress. Supports infinite scrolling, adaptive image loading, and responsive layouts.
