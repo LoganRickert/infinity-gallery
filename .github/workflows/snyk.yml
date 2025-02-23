@@ -1,0 +1,47 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 🟢 Scan Node.js Dependencies (React)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Run Snyk for npm dependencies
+        run: snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # 🟢 Scan PHP Code for Vulnerabilities
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Run Snyk Code Analysis for PHP
+        run: snyk code test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # 🟢 Scan Composer Dependencies (if applicable)
+      - name: Run Snyk Open Source Scan for PHP
+        run: snyk test --file=composer.json
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
