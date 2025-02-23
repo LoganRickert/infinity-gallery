@@ -202,8 +202,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const galleryKey = match[1]; // Extract gallery key
             const imageIndex = parseInt(match[2], 10); // Extract image index
     
+            // Find the gallery element
+            const galleryElement = document.querySelector(`[data-gallery-id="${galleryKey}"]`);
+            
+            if (!galleryElement) return; // Exit if the gallery does not exist
+    
+            // Check the gallery setting for on-image-click behavior
+            const onImageClick = galleryElement.dataset.onImageClick || "Lightbox"; 
+    
+            if (onImageClick !== "Lightbox") return; // Do nothing if not set to Lightbox
+    
             // Find all images in the matching gallery
-            const imagesInGallery = [...document.querySelectorAll(`[data-gallery-id="${galleryKey}"] img`)];
+            const imagesInGallery = [...galleryElement.querySelectorAll("img")];
     
             if (imagesInGallery.length > 0 && imageIndex >= 0 && imageIndex < imagesInGallery.length) {
                 openLightbox(imageIndex, galleryKey); // Open the correct image
@@ -296,40 +306,52 @@ document.addEventListener("DOMContentLoaded", function () {
     function setupLightbox() {
         document.querySelectorAll(".infinity-gallery").forEach(gallery => {
             const galleryId = gallery.dataset.galleryId;
+            const onImageClick = gallery.dataset.onImageClick || "Lightbox"; // Default to "Lightbox"
             const imgs = gallery.querySelectorAll("img");
-
+    
             imgs.forEach((img, index) => {
                 img.dataset.id = `${galleryId}-${index}`;
                 img.dataset.full = img.getAttribute("data-full"); // Ensure full image URL
-                img.addEventListener("click", () => openLightbox(index, galleryId));
+    
+                img.addEventListener("click", (event) => {
+                    if (onImageClick === "Lightbox") {
+                        openLightbox(index, galleryId);
+                    } else if (onImageClick === "New Tab") {
+                        const fullUrl = img.dataset.full;
+                        if (fullUrl) {
+                            window.open(fullUrl, "_blank");
+                        }
+                    }
+                    // If "None" is selected, do nothing
+                });
             });
         });
-
+    
         if (!lightboxEventsAdded) {
             document.querySelector("#lightbox-close").addEventListener("click", closeLightbox);
             document.querySelector("#lightbox-next").addEventListener("click", nextImage);
             document.querySelector("#lightbox-prev").addEventListener("click", prevImage);
             document.querySelector("#lightbox-download").addEventListener("click", downloadImage);
-
+    
             // Prevent duplicate tap events on mobile
             document.querySelector("#lightbox-next").addEventListener("touchend", (e) => e.preventDefault());
             document.querySelector("#lightbox-prev").addEventListener("touchend", (e) => e.preventDefault());
-
+    
             // Close lightbox when clicking outside the image
             document.querySelector("#lightbox").addEventListener("click", function (e) {
                 if (e.target === this) closeLightbox();
             });
-
+    
             window.addEventListener("keydown", (e) => {
                 if (e.key === "Escape") closeLightbox();
                 if (e.key === "ArrowRight") nextImage();
                 if (e.key === "ArrowLeft") prevImage();
                 if (e.key === "ArrowDown") closeLightbox();
             });
-
+    
             lightboxEventsAdded = true;
         }
-
+    
         loadFromURL();
     }
 

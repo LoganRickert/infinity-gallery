@@ -1,7 +1,10 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useSelect } from '@wordpress/data';
 import { useBlockProps, MediaUpload, InspectorControls } from '@wordpress/block-editor';
-import { Button, TextControl, PanelBody, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import {
+    Button, TextControl, PanelBody, RangeControl, SelectControl,
+    ToggleControl, ColorPicker
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import './editor.css';
 
@@ -26,6 +29,24 @@ const FILTERS = [
     { label: 'Hue Rotate', value: 'hue-rotate' }
 ];
 
+const CAPTION_POSITIONS = [
+    { label: 'None', value: 'None' },
+    { label: 'On Image', value: 'On Image' },
+    { label: 'Below Image', value: 'Below Image' }
+];
+
+const SHARE_OPTIONS = [
+    { label: 'None', value: 'None' },
+    { label: 'Image Full URL', value: 'Image Full URL' },
+    { label: 'Lightbox URL', value: 'Lightbox URL' }
+];
+
+const IMAGE_CLICK_OPTIONS = [
+    { label: 'None', value: 'None' },
+    { label: 'New Tab', value: 'New Tab' },
+    { label: 'Lightbox', value: 'Lightbox' }
+];
+
 // Register the block
 registerBlockType('infinity/gallery', {
     title: __('Infinity Gallery', 'infinity-gallery'),
@@ -41,12 +62,25 @@ registerBlockType('infinity/gallery', {
         hideDownload: { type: 'boolean', default: false },
         filterType: { type: 'string', default: 'none' },
         filterStrength: { type: 'number', default: 100 },
-        galleryKey: { type: 'string', default: 'gallery_' }
+        galleryKey: { type: 'string', default: 'gallery_' },
+        captionPosition: { type: 'string', default: 'None' },
+        limitCaptionCharacters: { type: 'boolean', default: false },
+        captionTextAlign: { type: 'string', default: 'center' },
+        captionCharacterLimit: { type: 'number', default: 100 },
+        captionFontSize: { type: 'number', default: 16 },
+        captionFontColor: { type: 'string', default: '#000000' },
+        captionBackgroundColor: { type: 'string', default: '#ffffff' },
+        shareOption: { type: 'string', default: 'None' },
+        onImageClick: { type: 'string', default: 'Lightbox' },
+        disableCaching: { type: 'boolean', default: false }
     },
     edit: ({ attributes, setAttributes }) => {
         const blockProps = useBlockProps();
-        const { galleryKey, images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload, filterType, filterStrength } = attributes;
-        
+        const { galleryKey, images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload,
+            filterType, filterStrength, captionPosition, limitCaptionCharacters, captionCharacterLimit,
+            captionFontSize, captionFontColor, captionBackgroundColor, shareOption, onImageClick,
+            captionTextAlign, disableCaching } = attributes;
+
         // Fetch all Infinity Gallery blocks in the current post
         const existingGalleries = useSelect((select) => {
             return select('core/block-editor').getBlocks().filter(block => block.name === 'infinity/gallery');
@@ -66,7 +100,7 @@ registerBlockType('infinity/gallery', {
 
             // Find next available number (gallery, gallery-2, gallery-3, etc.)
             let newKey = baseKey;
-            
+
             while (existingKeys.includes(newKey)) {
                 counter++;
                 newKey = `${baseKey}-${counter}`;
@@ -167,6 +201,11 @@ registerBlockType('infinity/gallery', {
                             checked={cropImages}
                             onChange={(value) => setAttributes({ cropImages: value })}
                         />
+                        <ToggleControl
+                            label={__('Disable Caching', 'infinity-gallery')}
+                            checked={disableCaching}
+                            onChange={(value) => setAttributes({ disableCaching: value })}
+                        />
                     </PanelBody>
 
                     <PanelBody title={__('Lightbox Settings', 'infinity-gallery')}>
@@ -182,8 +221,26 @@ registerBlockType('infinity/gallery', {
                         />
                     </PanelBody>
 
+                    <PanelBody title={__('Share Options', 'infinity-gallery')}>
+                        <SelectControl
+                            label={__('Share Option', 'infinity-gallery')}
+                            value={shareOption}
+                            options={SHARE_OPTIONS}
+                            onChange={(value) => setAttributes({ shareOption: value })}
+                        />
+                    </PanelBody>
+
+                    <PanelBody title={__('On Image Click', 'infinity-gallery')}>
+                        <SelectControl
+                            label={__('Action', 'infinity-gallery')}
+                            value={onImageClick}
+                            options={IMAGE_CLICK_OPTIONS}
+                            onChange={(value) => setAttributes({ onImageClick: value })}
+                        />
+                    </PanelBody>
+
                     <PanelBody title={__('Image Filters', 'infinity-gallery')}>
-                    <SelectControl
+                        <SelectControl
                             label={__('Filter Type', 'infinity-gallery')}
                             value={filterType}
                             options={FILTERS}
@@ -197,6 +254,66 @@ registerBlockType('infinity/gallery', {
                                 min={minFilterRange}
                                 max={maxFilterRange}
                             />
+                        )}
+                    </PanelBody>
+
+                    <PanelBody title={__('Caption Settings', 'infinity-gallery')}>
+                        <SelectControl
+                            label={__('Caption Position', 'infinity-gallery')}
+                            value={captionPosition}
+                            options={CAPTION_POSITIONS}
+                            onChange={(value) => setAttributes({ captionPosition: value })}
+                        />
+                        {captionPosition !== 'None' && (
+                            <>
+                                <ToggleControl
+                                    label={__('Limit Caption Characters', 'infinity-gallery')}
+                                    checked={limitCaptionCharacters}
+                                    onChange={(value) => setAttributes({ limitCaptionCharacters: value })}
+                                />
+                                {limitCaptionCharacters && (
+                                    <RangeControl
+                                        label={__('Max Characters', 'infinity-gallery')}
+                                        value={captionCharacterLimit}
+                                        onChange={(value) => setAttributes({ captionCharacterLimit: value })}
+                                        min={1}
+                                        max={500}
+                                    />
+                                )}
+                                <RangeControl
+                                    label={__('Caption Font Size', 'infinity-gallery')}
+                                    value={captionFontSize}
+                                    onChange={(value) => setAttributes({ captionFontSize: value })}
+                                    min={8}
+                                    max={50}
+                                />
+                                <SelectControl
+                                    label={__('Caption Text Alignment', 'infinity-gallery')}
+                                    value={captionTextAlign}
+                                    options={[
+                                        { label: __('Left', 'infinity-gallery'), value: 'left' },
+                                        { label: __('Center', 'infinity-gallery'), value: 'center' },
+                                        { label: __('Right', 'infinity-gallery'), value: 'right' }
+                                    ]}
+                                    onChange={(value) => setAttributes({ captionTextAlign: value })}
+                                />
+                                <div>
+                                    <p>{__('Caption Font Color', 'infinity-gallery')}</p>
+                                    <ColorPicker
+                                        color={captionFontColor}
+                                        enableAlpha
+                                        onChange={(value) => setAttributes({ captionFontColor: value })}
+                                    />
+                                </div>
+                                <div>
+                                    <p>{__('Caption Background Color', 'infinity-gallery')}</p>
+                                    <ColorPicker
+                                        color={captionBackgroundColor}
+                                        enableAlpha
+                                        onChange={(value) => setAttributes({ captionBackgroundColor: value })}
+                                    />
+                                </div>
+                            </>
                         )}
                     </PanelBody>
                 </InspectorControls>

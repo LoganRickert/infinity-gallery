@@ -8,17 +8,31 @@ if (!defined('INFINITY_GALLERY_VERSION')) {
     define('INFINITY_GALLERY_VERSION', '1.0.0');
 }
 
+/**
+ * Sanitize a hex color, supporting alpha transparency.
+ */
+function infinity_gallery_sanitize_hex_color_with_alpha($color) {
+    if (preg_match('/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{8})$/', $color)) {
+        return $color;
+    }
+    return '';
+}
+
 function infinity_gallery_render_callback($attributes)
 {
     if (empty($attributes['images'])) {
         return '<p>No images selected.</p>';
     }
 
-    $cache_key = 'infinity_gallery_' . hash('sha256', json_encode($attributes));
-    $cached_output = get_transient($cache_key);
+    $disableCaching = !empty($attributes['disableCaching']) ? boolval($attributes['disableCaching']) : false;
 
-    if ($cached_output !== false) {
-        return $cached_output;
+    if (!$disableCaching) {
+        $cache_key = 'infinity_gallery_' . hash('sha256', json_encode($attributes));
+        $cached_output = get_transient($cache_key);
+    
+        if ($cached_output !== false) {
+            return $cached_output;
+        }
     }
 
     $images = $attributes['images'];
@@ -31,6 +45,16 @@ function infinity_gallery_render_callback($attributes)
     $filterType = sanitize_text_field($attributes['filterType'] ?? 'none');
     $filterStrength = intval($attributes['filterStrength'] ?? 100);
     $galleryKey = sanitize_title($attributes['galleryKey'] ?? 'gallery');
+
+    $captionPosition = sanitize_text_field($attributes['captionPosition'] ?? 'None');
+    $captionFontSize = intval($attributes['captionFontSize'] ?? 16);
+    $captionFontColor = infinity_gallery_sanitize_hex_color_with_alpha($attributes['captionFontColor'] ?? '#000000');
+    $captionBackgroundColor = infinity_gallery_sanitize_hex_color_with_alpha($attributes['captionBackgroundColor'] ?? '#ffffff');
+    $limitCaptionCharacters = boolval($attributes['limitCaptionCharacters'] ?? false);
+    $captionCharacterLimit = intval($attributes['captionCharacterLimit'] ?? 100);
+    $captionTextAlign = sanitize_text_field($attributes['captionTextAlign'] ?? 'center');
+    $onImageClick = sanitize_text_field($attributes['onImageClick'] ?? 'Lightbox');
+    $shareOption = sanitize_text_field($attributes['shareOption'] ?? 'None');
 
     // Generate a stable unique ID based on post ID + block position
     $gallery_id = $galleryKey; // Unique per page & post
@@ -45,7 +69,8 @@ function infinity_gallery_render_callback($attributes)
         data-hide-info="<?php echo esc_attr($hideInfo ? 'true' : 'false'); ?>"
         data-hide-download="<?php echo esc_attr($hideDownload ? 'true' : 'false'); ?>"
         data-filter-type="<?php echo esc_attr($filterType); ?>"
-        data-filter-strength="<?php echo esc_attr($filterStrength); ?>">
+        data-filter-strength="<?php echo esc_attr($filterStrength); ?>"
+        data-on-image-click="<?php echo esc_attr($onImageClick); ?>">
         <?php foreach ($images as $index => $image) :
             if (!isset($image['url']) || !wp_http_validate_url($image['url'])) {
                 continue; // Skip invalid URLs
@@ -57,6 +82,11 @@ function infinity_gallery_render_callback($attributes)
 
             // Unique image ID
             $image_id = "{$gallery_id}-{$index}";
+            $captionText = $image['caption'] ?? '';
+
+            if ($limitCaptionCharacters && strlen($captionText) > $captionCharacterLimit) {
+                $captionText = substr($captionText, 0, $captionCharacterLimit) . '...';
+            }
         ?>
             <figure class="infinity-gallery-item">
                 <picture>
@@ -69,6 +99,21 @@ function infinity_gallery_render_callback($attributes)
                         data-src="<?php echo esc_url($selectedSrc); ?>"
                         data-filename="<?php echo esc_attr(basename($image['url'])); ?>">
                 </picture>
+                <?php if (!empty($captionText)) : ?>
+                    <figcaption class="infinity-gallery-caption <?php echo esc_attr($captionPosition === 'On Image' ? 'on-image' : 'below-image'); ?>"
+                        style="text-align: <?php echo esc_attr($captionTextAlign); ?>; font-size: <?php echo esc_attr($captionFontSize); ?>px; color: <?php echo esc_attr($captionFontColor); ?>; background-color: <?php echo esc_attr($captionBackgroundColor); ?>;">
+                        <?php echo esc_html($captionText); ?>
+                    </figcaption>
+                <?php endif; ?>
+                <?php if ($shareOption !== 'None') : ?>
+                    <div class="infinity-gallery-share">
+                        <?php if ($shareOption === 'Image Full URL') : ?>
+                            <a href="<?php echo esc_url($fullSrc); ?>" target="_blank" rel="noopener noreferrer">Share Image</a>
+                        <?php elseif ($shareOption === 'Lightbox URL') : ?>
+                            <a href="<?php echo esc_url($selectedSrc); ?>" target="_blank" rel="noopener noreferrer">Share Lightbox</a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </figure>
         <?php endforeach; ?>
     </div>
@@ -162,9 +207,10 @@ function infinity_gallery_render_callback($attributes)
     </script>
 <?php
     $output = ob_get_clean();
-    
-    // Cache output for 1 hour
-    set_transient($cache_key, $output, HOUR_IN_SECONDS);
 
+    if (!$disableCaching) {
+        set_transient($cache_key, $output, HOUR_IN_SECONDS);
+    }
+    
     return $output;
 }

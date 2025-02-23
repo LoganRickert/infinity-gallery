@@ -87,7 +87,71 @@
         },
         "galleryKey": {
             "type": "string",
-            "default": "gallery"
+            "default": ""
+        },
+        "captionPosition": {
+            "type": "string",
+            "default": "None",
+            "enum": [
+                "None",
+                "On Image",
+                "Below Image"
+            ]
+        },
+        "captionTextAlign": {
+            "type": "string",
+            "default": "center",
+            "enum": [
+                "left",
+                "center",
+                "right"
+            ]
+        },
+        "limitCaptionCharacters": {
+            "type": "boolean",
+            "default": false
+        },
+        "captionOpacity": {
+            "type": "number",
+            "default": 100
+        },
+        "captionCharacterLimit": {
+            "type": "number",
+            "default": 100
+        },
+        "captionFontSize": {
+            "type": "number",
+            "default": 16
+        },
+        "captionFontColor": {
+            "type": "string",
+            "default": "#000000"
+        },
+        "captionBackgroundColor": {
+            "type": "string",
+            "default": "#ffffff"
+        },
+        "shareOption": {
+            "type": "string",
+            "default": "None",
+            "enum": [
+                "None",
+                "Image Full URL",
+                "Lightbox URL"
+            ]
+        },
+        "onImageClick": {
+            "type": "string",
+            "default": "Lightbox",
+            "enum": [
+                "None",
+                "New Tab",
+                "Lightbox"
+            ]
+        },
+        "disableCaching": {
+            "type": "boolean",
+            "default": false
         }
     },
     "supports": {
