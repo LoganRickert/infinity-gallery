@@ -14,7 +14,7 @@ function infinity_gallery_render_callback($attributes)
         return '<p>No images selected.</p>';
     }
 
-    $cache_key = 'infinity_gallery_' . md5(json_encode($attributes));
+    $cache_key = 'infinity_gallery_' . hash('sha256', json_encode($attributes));
     $cached_output = get_transient($cache_key);
 
     if ($cached_output !== false) {
