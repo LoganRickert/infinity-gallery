@@ -257,16 +257,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function downloadImage() {
         const img = document.querySelector("#lightbox-img");
+        
+        if (!img) {
+            console.error("Image element not found.");
+            return;
+        }
+    
         const fullUrl = img.src;
-        const filename = images[currentIndex].dataset.filename || "download.jpg"; // Get real filename
-
-        const link = document.createElement("a");
-        link.href = fullUrl;
-        link.download = filename; // Use real file name
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        let filename = "download.jpg"; // Default name
+    
+        // Ensure images[currentIndex] exists
+        if (typeof images !== "undefined" && images[currentIndex] && images[currentIndex].dataset.filename) {
+            filename = images[currentIndex].dataset.filename;
+        }
+    
+        // Handle Cross-Origin Issues
+        fetch(fullUrl, { mode: 'no-cors' })
+            .then(response => response.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+    
+                link.href = blobUrl;
+                link.download = filename;
+                link.rel = "noopener noreferrer"; // Security best practice
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+    
+                // Revoke the object URL after download
+                URL.revokeObjectURL(blobUrl);
+            })
+            .catch(error => console.error("Failed to download image:", error));
     }
+    
 
     function updateLightboxButtons() {
         document.querySelector("#lightbox-prev").style.display = currentIndex === 0 ? "none" : "block";
