@@ -165,3 +165,30 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ## 🔥 **Enjoy a Blazing Fast WordPress Gallery!**  
 Infinity Gallery is built for **speed, performance, and usability**. 🎉 Try it today!
+
+## Browserling Results for v1.11.0
+
+- ✅ Chrome 137
+- ✅ Chrome 122
+- ✅ Chrome 83
+- ✅ Chrome 66
+- ❌ Chrome 65
+
+- ✅ Edge 127
+- ✅ Edge 100
+
+- ✅ Firefox 128
+- ✅ Firefox 105
+- ✅ Firefox 87
+- ✅ Firefox 61
+- ❌ Firefox 60
+
+- ✅ Opera 112
+- ✅ Opera 68
+- ✅ Opera 53
+- ❌ Opera 52
+
+- ✅ Brave 1.68
+- ✅ Brave 1.24
+
+- ✅ Vivaldi 6.8
