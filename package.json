@@ -1,6 +1,6 @@
 {
   "name": "infinity-gallery",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "main": "index.js",
   "scripts": {
     "prebuild": "node update-version.js",
@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "Logan Rickert",
-  "license": "Apache-2.0",
+  "license": "GPL-2.0-or-later",
   "description": "A high-performance WordPress gallery plugin with infinite scrolling, responsive layouts, and a sleek lightbox experience.",
   "devDependencies": {
     "@wordpress/scripts": "^30.11.0",

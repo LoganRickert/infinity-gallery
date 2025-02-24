@@ -1,15 +1,16 @@
-=== InfinityGallery ===
+=== Infinity Gallery ===
 Contributors: Logan Rickert
-Tags: gallery, lazy load, infinite scroll, images
+Tags: gallery, images, responsive, infinite-scroll, lazy-loading
 Requires at least: 5.6
 Tested up to: 6.7.2
-Stable tag: 1.10.0
-License: Apache License 2.0
-License URI: https://www.apache.org/licenses/LICENSE-2.0
-Github URI: https://github.com/LoganRickert/infinity-gallery
+Stable tag: 1.11.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+Github URI: https://github.com/LoganRickert/infinity-Gallery
+Infinity Gallery is a high-performance, lazy-loaded image gallery for WordPress. Supports infinite scrolling and responsive layouts.
 
 == Description ==
-InfinityGallery is a high-performance, lazy-loaded image gallery for WordPress. Supports infinite scrolling, adaptive image loading, and responsive layouts.
+Infinity Gallery is a high-performance, lazy-loaded image gallery for WordPress. Supports infinite scrolling and responsive layouts.
 
 == Installation ==
 1. Upload the `infinity-gallery` folder to the `/wp-content/plugins/` directory.
@@ -17,6 +18,11 @@ InfinityGallery is a high-performance, lazy-loaded image gallery for WordPress. 
 3. Insert a gallery block in the editor and select images.
 
 == Changelog ==
+= 1.11.0 =
+
+* Fixed dashicons not being loaded.
+* Added extra aria labels.
+
 = 1.10.0 =
 
 * Switched to using blocks.json

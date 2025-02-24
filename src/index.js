@@ -331,11 +331,11 @@ registerBlockType('infinity/gallery', {
                     {images.length > 0 ? (
                         <div className="infinity-gallery-preview">
                             {images.map((image) => (
-                                <img key={image.id} src={image.thumbnailUrl} alt={image.alt} role="img" aria-label={image.alt || 'Gallery image'} />
+                                <img key={image.id} src={image.thumbnailUrl} alt={image.alt} role="img" aria-label={image.alt || image.caption || 'Untitled image'} />
                             ))}
                         </div>
                     ) : (
-                        <div className="infinity-gallery-placeholder">
+                        <div className="infinity-gallery-placeholder" aria-live="polite">
                             <p>{__('Click "Select Images" to add a gallery.', 'infinity-gallery')}</p>
                         </div>
                     )}
@@ -346,6 +346,7 @@ registerBlockType('infinity/gallery', {
                         multiple
                         gallery
                         value={images.map(img => img.id)}
+                        aria-label={__('Open media library to select images', 'infinity-gallery')}
                         render={({ open }) => (
                             <Button isPrimary onClick={open}>
                                 {__('Select Images', 'infinity-gallery')}

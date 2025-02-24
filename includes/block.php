@@ -22,7 +22,7 @@ function infinity_gallery_sanitize_hex_color_with_alpha($color)
 function infinity_gallery_render_callback($attributes)
 {
     if (empty($attributes['images'])) {
-        return '<p>No images selected.</p>';
+        return '<p aria-live="polite">No images selected.</p>';
     }
 
     $disableCaching = !empty($attributes['disableCaching']) ? boolval($attributes['disableCaching']) : false;
@@ -68,7 +68,6 @@ function infinity_gallery_render_callback($attributes)
         data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
         data-max-per-row="<?php echo esc_attr($maxPerRow); ?>"
         data-gutter-size="<?php echo esc_attr($gutterSize); ?>"
-        data-crop-images="<?php echo esc_attr($cropImages ? 'true' : 'false'); ?>"
         data-crop-images="<?php echo esc_attr($cropImages ? 'true' : 'false'); ?>"
         data-hide-info="<?php echo esc_attr($hideInfo ? 'true' : 'false'); ?>"
         data-hide-download="<?php echo esc_attr($hideDownload ? 'true' : 'false'); ?>"
@@ -133,7 +132,11 @@ function infinity_gallery_render_callback($attributes)
                     <?php if ($shareOption !== 'None') : ?>
                         <?php
                             // Determine the correct share URL
-                            $currentPageURL = esc_url((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+                            $currentPageURL = esc_url_raw(
+                                (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") .
+                                "://" . (isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '') .
+                                (isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '')
+                            );
                             
                             if ($shareOption === 'Image Full URL') {
                                 $shareURL = esc_url($fullSrc);
@@ -146,7 +149,7 @@ function infinity_gallery_render_callback($attributes)
 
                         <div class="infinity-gallery-share" aria-label="Share this image">
                             <a href="#" class="infinity-share-copy"
-                                data-share-url="<?php echo $shareURL; ?>"
+                                data-share-url="<?php echo urlencode($shareURL); ?>"
                                 aria-label="Copy share link">
                                 <span class="dashicons dashicons-share" aria-hidden="true"></span>
                             </a>

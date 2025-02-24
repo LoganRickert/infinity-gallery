@@ -107,7 +107,7 @@ This creates a `dist/infinity-gallery.zip` file, ready for upload to another Wor
 ---
 
 ## 📜 **License**  
-This plugin is licensed under the **Apache License 2.0**.  
+This plugin is licensed under the **GPL-2.0-or-later**.  
 
 ---
 
@@ -117,6 +117,11 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 ---
 
 ## 📝 **Changelog**
+
+### 1.11.0
+
+* Fixed dashicons not being loaded.
+* Added extra aria labels.
 
 ### 1.10.0
 
