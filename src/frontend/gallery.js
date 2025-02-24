@@ -10,25 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
         setupGallery(gallery, maxPerRow, gutterSize);
     });
 
-    function copyToClipboard(event, element) {
-        event.preventDefault(); // Prevents link from jumping
-
-        const shareUrl = element.getAttribute("data-share-url");
-        if (!shareUrl) return;
-
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            element.classList.add("copied");
-            element.setAttribute("aria-label", "Copied!");
-
-            setTimeout(() => {
-                element.classList.remove("copied");
-                element.setAttribute("aria-label", "Copy share link");
-            }, 2000);
-        }).catch(err => {
-            console.error("Error copying link: ", err);
-        });
-    }
-
     // Attach event listeners to share copy buttons
     document.querySelectorAll(".infinity-share-copy").forEach(copyBtn => {
         copyBtn.addEventListener("click", function (event) {

@@ -3,7 +3,7 @@
  * Plugin Name: Infinity Gallery
  * Plugin URI: https://infinity-gallery.com
  * Description: A high-performance, lazy-loaded gallery plugin for WordPress.
- * Version: 1.11.0
+ * Version: 1.12.0
  * Author: Logan Rickert
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('INFINITY_GALLERY_VERSION', '1.11.0');
+define('INFINITY_GALLERY_VERSION', '1.12.0');
 define('INFINITY_GALLERY_DIR', plugin_dir_path(__FILE__));
 define('INFINITY_GALLERY_URL', plugin_dir_url(__FILE__));
 

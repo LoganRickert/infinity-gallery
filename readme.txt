@@ -3,7 +3,7 @@ Contributors: Logan Rickert
 Tags: gallery, images, responsive, infinite-scroll, lazy-loading
 Requires at least: 5.6
 Tested up to: 6.7.2
-Stable tag: 1.11.0
+Stable tag: 1.12.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Github URI: https://github.com/LoganRickert/infinity-Gallery
@@ -18,6 +18,10 @@ Infinity Gallery is a high-performance, lazy-loaded image gallery for WordPress.
 3. Insert a gallery block in the editor and select images.
 
 == Changelog ==
+= 1.12.0 =
+
+* Enqueue did not recursively check.
+
 = 1.11.0 =
 
 * Fixed dashicons not being loaded.

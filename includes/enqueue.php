@@ -13,15 +13,27 @@ function infinity_gallery_should_enqueue() {
     if (!$post) {
         return false;
     }
-    
+
     $blocks = parse_blocks($post->post_content);
 
+    return contains_infinity_gallery_block($blocks);
+}
+
+/**
+ * Recursively checks if the given blocks contain the 'infinity/gallery' block.
+ */
+function contains_infinity_gallery_block($blocks) {
     foreach ($blocks as $block) {
-        if ($block['blockName'] === 'infinity/gallery') {
+        if (isset($block['blockName']) && $block['blockName'] === 'infinity/gallery') {
+            return true;
+        }
+
+        // Check inside innerBlocks if available
+        if (!empty($block['innerBlocks']) && contains_infinity_gallery_block($block['innerBlocks'])) {
             return true;
         }
     }
-    
+
     return false;
 }
 

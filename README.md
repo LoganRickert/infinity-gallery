@@ -118,6 +118,10 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ## 📝 **Changelog**
 
+### 1.12.0
+
+* Enqueue did not recursively check.
+
 ### 1.11.0
 
 * Fixed dashicons not being loaded.
