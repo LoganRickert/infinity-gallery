@@ -118,6 +118,11 @@ Feel free to submit **issues, feature requests, or pull requests** on the [GitHu
 
 ## 📝 **Changelog**
 
+### 1.13.0
+
+* Changed from Grid to Masonry for gallery.
+* Lightbox IDs are now using Media ID to avoid loading wrong image if gallery order changes.
+
 ### 1.12.0
 
 * Enqueue did not recursively check.

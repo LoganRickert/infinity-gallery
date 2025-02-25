@@ -14,11 +14,20 @@ document.addEventListener("DOMContentLoaded", function () {
         disableScroll();
 
         currentIndex = index;
+
         galleryID = galleryId;
         const gallery = document.querySelector(`[data-gallery-id="${galleryId}"]`);
 
-        images = [...gallery.querySelectorAll("img")];
+        images = [...gallery.querySelectorAll("img")].sort((a, b) => {
+            return parseInt(a.getAttribute("data-index"), 10) - parseInt(b.getAttribute("data-index"), 10);
+        });
+
         const image = images[currentIndex];
+
+        if (currentIndex < 0) {
+            return;
+        }
+
         const lightboxImg = document.querySelector("#lightbox-img");
 
         const filterType = gallery.dataset.filterType || "none";
@@ -200,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
         if (match) {
             const galleryKey = match[1]; // Extract gallery key
-            const imageIndex = parseInt(match[2], 10); // Extract image index
+            const imageId = parseInt(match[2], 10); // Extract image index
     
             // Find the gallery element
             const galleryElement = document.querySelector(`[data-gallery-id="${galleryKey}"]`);
@@ -215,8 +224,12 @@ document.addEventListener("DOMContentLoaded", function () {
             // Find all images in the matching gallery
             const imagesInGallery = [...galleryElement.querySelectorAll("img")];
     
-            if (imagesInGallery.length > 0 && imageIndex >= 0 && imageIndex < imagesInGallery.length) {
-                openLightbox(imageIndex, galleryKey); // Open the correct image
+            if (imagesInGallery.length > 0 && imageId >= 0) {
+                const imageIndex = imagesInGallery.find(img => img.dataset.id === `${galleryKey}-${imageId}`);
+
+                if (imageIndex) {
+                    openLightbox(parseInt(imageIndex.dataset.index, 10), galleryKey); // Open the correct image
+                }
             }
         }
     }
@@ -310,12 +323,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const imgs = gallery.querySelectorAll("img");
     
             imgs.forEach((img, index) => {
-                img.dataset.id = `${galleryId}-${index}`;
                 img.dataset.full = img.getAttribute("data-full"); // Ensure full image URL
     
                 img.addEventListener("click", (event) => {
                     if (onImageClick === "Lightbox") {
-                        openLightbox(index, galleryId);
+                        openLightbox(parseInt(img.dataset.index, 10), galleryId);
                     } else if (onImageClick === "New Tab") {
                         const fullUrl = img.dataset.full;
                         if (fullUrl) {

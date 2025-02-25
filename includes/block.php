@@ -36,6 +36,8 @@ function infinity_gallery_render_callback($attributes)
         }
     }
 
+    $gallery_uid = uniqid();
+
     $images = $attributes['images'];
     $imageSize = sanitize_text_field($attributes['imageSize'] ?? 'large');
     $maxPerRow = intval($attributes['maxPerRow'] ?? 4);
@@ -63,8 +65,8 @@ function infinity_gallery_render_callback($attributes)
 
     ob_start();
 ?>
-    <div class="infinity-gallery" id="<?php echo esc_attr($gallery_id); ?>"
-        style="--crop-image-height: <?php echo esc_attr($cropImageHeight); ?>px"
+    <div class="infinity-gallery infinity-gallery-<?php echo esc_attr($gallery_uid); ?>" id="<?php echo esc_attr($gallery_id); ?>"
+        style="--crop-image-height: <?php echo esc_attr($cropImageHeight); ?>px; --gutter-size: <?php echo esc_attr($gutterSize); ?>px"
         data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
         data-max-per-row="<?php echo esc_attr($maxPerRow); ?>"
         data-gutter-size="<?php echo esc_attr($gutterSize); ?>"
@@ -83,8 +85,6 @@ function infinity_gallery_render_callback($attributes)
             $selectedSrc = !empty($image['sizes'][$imageSize]['url']) ? esc_url($image['sizes'][$imageSize]['url']) : esc_url($image['url']);
             $fullSrc = !empty($image['sizes']['full']['url']) ? esc_url($image['sizes']['full']['url']) : esc_url($image['url']);
 
-            // Unique image ID
-            $image_id = "{$gallery_id}-{$index}";
             $captionText = $image['caption'] ?? '';
 
             if ($limitCaptionCharacters && strlen($captionText) > $captionCharacterLimit) {
@@ -97,8 +97,8 @@ function infinity_gallery_render_callback($attributes)
                         alt="<?php echo esc_attr($image['alt'] ?? 'Untitled Image'); ?>"
                         class="infinity-gallery-image"
                         loading="lazy"
-                        role="img"
-                        data-id="<?php echo esc_attr($image_id); ?>"
+                        data-id="<?php echo esc_attr($gallery_id); ?>-<?php echo esc_attr($image['id'] ?? $image['index']); ?>"
+                        data-index="<?php echo esc_attr($index); ?>"
                         data-full="<?php echo esc_url($fullSrc); ?>"
                         data-src="<?php echo esc_url($selectedSrc); ?>"
                         data-filename="<?php echo esc_attr(basename($image['url'])); ?>">
@@ -131,20 +131,20 @@ function infinity_gallery_render_callback($attributes)
 
                     <?php if ($shareOption !== 'None') : ?>
                         <?php
-                            // Determine the correct share URL
-                            $currentPageURL = esc_url_raw(
-                                (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") .
+                        // Determine the correct share URL
+                        $currentPageURL = esc_url_raw(
+                            (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") .
                                 "://" . (isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '') .
                                 (isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '')
-                            );
-                            
-                            if ($shareOption === 'Image Full URL') {
-                                $shareURL = esc_url($fullSrc);
-                            } elseif ($shareOption === 'Image Selected URL') {
-                                $shareURL = esc_url($selectedSrc);
-                            } else { // Lightbox URL
-                                $shareURL = esc_url($currentPageURL . '#' . $galleryKey . '-' . $index);
-                            }
+                        );
+
+                        if ($shareOption === 'Image Full URL') {
+                            $shareURL = esc_url($fullSrc);
+                        } elseif ($shareOption === 'Image Selected URL') {
+                            $shareURL = esc_url($selectedSrc);
+                        } else { // Lightbox URL
+                            $shareURL = esc_url($currentPageURL . '#' . $galleryKey . '-' . $index);
+                        }
                         ?>
 
                         <div class="infinity-gallery-share" aria-label="Share this image">
@@ -222,39 +222,26 @@ function infinity_gallery_render_callback($attributes)
         (function() {
             document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-            const gallery = document.getElementById("<?php echo esc_js($gallery_id); ?>");
-            if (!gallery) return;
+            document.querySelectorAll('.infinity-gallery-<?php echo esc_attr($gallery_uid); ?>').forEach(gallery => {
+                // // Dynamic scaling function
+                function calculateColumns() {
+                    const maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
+                    const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
+                    const containerWidth = gallery.parentElement ? gallery.parentElement.offsetWidth : window.innerWidth;
+                    const screenWidth = Math.min(containerWidth, 2560);
 
-            // Read the correct maxPerRow from the data attribute
-            const maxPerRow = parseInt(gallery.dataset.maxPerRow) || 4;
-            const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
+                    if (screenWidth < 768) return 1; // Always 1 image on mobile
 
-            const containerWidth = gallery.parentElement ? gallery.parentElement.offsetWidth : window.innerWidth;
-            const screenWidth = Math.min(containerWidth, 2560);
+                    if (maxPerRow <= 3) {
+                        if (screenWidth < 1100) return 1; // 1 column under 1300px
+                        if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
+                        return 3; // Otherwise, use 3 columns
+                    }
 
-            // Dynamic scaling function
-            function calculateColumns() {
-                if (screenWidth < 768) return 1; // Always 1 image on mobile
-
-                if (maxPerRow <= 3) {
-                    if (screenWidth < 1100) return 1; // 1 column under 1300px
-                    if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
-                    return 3; // Otherwise, use 3 columns
+                    // Scale columns based on screen width and maxPerRow
+                    return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
                 }
 
-                // Scale columns based on screen width and maxPerRow
-                return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
-            }
-
-            const newColumns = calculateColumns();
-
-            // Set columns dynamically on initial load
-            gallery.dataset.maxPerRow = maxPerRow;
-            gallery.style.display = "grid";
-            gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
-            gallery.style.gap = `${gutterSize}px`;
-
-            document.querySelectorAll('.infinity-gallery').forEach(gallery => {
                 const filterType = gallery.dataset.filterType;
                 const filterStrength = gallery.dataset.filterStrength || 100;
 
@@ -272,6 +259,45 @@ function infinity_gallery_render_callback($attributes)
                 }
 
                 gallery.style.setProperty('--gallery-filter', filterValue);
+
+                const originalItems = Array.from(gallery.children); // Clone original items to avoid re-inserting gallery itself
+                let columnContainers = [];
+
+                function applyMasonry() {
+                    const columns = calculateColumns();
+
+                    if (columnContainers.length === columns) return; // Prevent unnecessary rebuilds
+
+                    gallery.innerHTML = ''; // Clear gallery only once
+                    gallery.style.setProperty('--columns', columns);
+                    columnContainers = [];
+
+                    // Create column containers
+                    for (let i = 0; i < columns; i++) {
+                        const column = document.createElement("div");
+                        column.classList.add("infinity-gallery-column");
+                        gallery.appendChild(column);
+
+                        columnContainers.push(column);
+                    }
+
+                    // Move items into columns instead of cloning (preserving event listeners)
+                    originalItems.forEach((item, index) => {
+                        columnContainers[index % columns].appendChild(item);
+                    });
+                }
+
+                // Debounce function to prevent excessive calls on resize
+                function debounce(func, delay) {
+                    let timeout;
+                    return function() {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => func.apply(this, arguments), delay);
+                    };
+                }
+
+                applyMasonry();
+                window.addEventListener("resize", debounce(applyMasonry, 300));
             });
         })();
     </script>

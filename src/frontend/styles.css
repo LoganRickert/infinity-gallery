@@ -3,9 +3,17 @@
 }
 
 .infinity-gallery {
-    display: grid;
-    gap: 10px;
-    transition: grid-template-columns 0.3s ease-in-out;
+    display: flex;
+    gap: var(--gutter-size, 10px);
+    justify-content: center;
+    width: 100%;
+}
+
+.infinity-gallery-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gutter-size, 10px);
+    width: calc(100% / var(--columns)); /* Adjust dynamically via JS */
 }
 
 /* Crop Images */
@@ -16,18 +24,18 @@
 }
 
 .infinity-gallery-item {
-    width: 100%; /* Let the grid handle the widths */
-    overflow: hidden;
+    width: 100%;
     border-radius: 5px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
 .infinity-gallery-item img {
     width: 100%;
-    height: auto; /* Maintain aspect ratio */
     display: block;
     cursor: pointer;
-    min-height: 600px;
     transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
 }
 

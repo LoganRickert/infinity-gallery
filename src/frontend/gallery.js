@@ -1,13 +1,10 @@
 import "./styles.css";
-import debounce from 'lodash/debounce';
 
 document.addEventListener("DOMContentLoaded", function () {
     const galleries = document.querySelectorAll('.infinity-gallery');
 
     galleries.forEach(gallery => {
-        const maxPerRow = parseInt(gallery.dataset.maxPerRow, 10) || 3;
-        const gutterSize = parseInt(gallery.dataset.gutterSize) || 10;
-        setupGallery(gallery, maxPerRow, gutterSize);
+        lazyLoadImages(gallery);
     });
 
     // Attach event listeners to share copy buttons
@@ -32,57 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-function setupGallery(gallery, maxPerRow, gutterSize) {
-    applyResponsiveGrid(gallery, maxPerRow, gutterSize);
-    lazyLoadImages(gallery);
-}
-
-function applyResponsiveGrid(gallery, maxPerRow, gutterSize) {
-    function calculateColumns() {
-        const containerWidth = gallery.parentElement ? gallery.parentElement.offsetWidth : window.innerWidth;
-        const screenWidth = Math.min(containerWidth, 2560);
-        
-        if (screenWidth < 768) return 1; // Always 1 image on mobile
-
-        if (maxPerRow <= 3) {
-            if (screenWidth < 1100) return 1; // 1 column under 1300px
-            if (screenWidth < 1600 || maxPerRow <= 2) return 2; // 2 columns under 1700px
-            return 3; // Otherwise, use 3 columns
-        }
-
-        // Dynamically scale images per row based on maxPerRow
-        return Math.max(1, Math.min(Math.round((screenWidth / 2560) * maxPerRow), maxPerRow));
-    }
-
-    function updateGrid() {
-        if (!gallery) return;
-
-        // Ensure maxPerRow is respected
-        const newColumns = calculateColumns();
-
-        // Only update if the number of columns actually changes
-        if (gallery.dataset.currentColumns !== String(newColumns)) {
-            gallery.style.gridTemplateColumns = `repeat(${newColumns}, 1fr)`;
-            gallery.dataset.currentColumns = String(newColumns);
-        }
-
-        gallery.style.gap = `${gutterSize}px`;
-    }
-
-    // Initialize grid on load
-    updateGrid();
-
-    // Prevent multiple event listeners
-    if (!gallery.dataset.listenerAdded) {
-        window.addEventListener("resize", debounce(updateGrid, 100));
-        gallery.dataset.listenerAdded = "true";
-    }
-
-    // Detect if the gallery is modified (e.g., reloaded via AJAX or Reactivity)
-    const observer = new MutationObserver(updateGrid);
-    observer.observe(gallery, { childList: true, subtree: true });
-}
 
 function loadPicture(picture) {
     picture.querySelectorAll("source").forEach(source => {

@@ -1,6 +1,6 @@
 {
   "name": "infinity-gallery",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "main": "index.js",
   "scripts": {
     "prebuild": "node update-version.js",
