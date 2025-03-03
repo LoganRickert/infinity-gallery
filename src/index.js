@@ -55,6 +55,7 @@ registerBlockType('infinity/gallery', {
     category: 'media',
     attributes: {
         images: { type: 'array', default: [] },
+        padding: { type: 'number', default: 20 },
         maxPerRow: { type: 'number', default: 4 },
         imageSize: { type: 'string', default: 'large' },
         gutterSize: { type: 'number', default: 10 },
@@ -81,7 +82,7 @@ registerBlockType('infinity/gallery', {
         const { galleryKey, images, maxPerRow, imageSize, gutterSize, cropImages, hideInfo, hideDownload,
             filterType, filterStrength, captionPosition, limitCaptionCharacters, captionCharacterLimit,
             captionFontSize, captionFontColor, captionBackgroundColor, shareOption, onImageClick,
-            captionTextAlign, disableCaching, cropImageHeight } = attributes;
+            captionTextAlign, disableCaching, cropImageHeight, padding } = attributes;
 
         // Fetch all Infinity Gallery blocks in the current post
         const existingGalleries = useSelect((select) => {
@@ -184,6 +185,13 @@ registerBlockType('infinity/gallery', {
                             onChange={(value) => setAttributes({ maxPerRow: value })}
                             min={1}
                             max={10}
+                        />
+                        <RangeControl
+                            label={__('Body Padding', 'infinity-gallery')}
+                            value={padding}
+                            onChange={(value) => setAttributes({ padding: value })}
+                            min={0}
+                            max={100}
                         />
                         <SelectControl
                             label={__('Image Size', 'infinity-gallery')}

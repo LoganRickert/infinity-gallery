@@ -1,8 +1,8 @@
 === Infinity Gallery ===
-Contributors: Logan Rickert
+Contributors: loganrickert
 Tags: gallery, images, responsive, infinite-scroll, lazy-loading
 Requires at least: 5.6
-Tested up to: 6.7.2
+Tested up to: 6.7
 Stable tag: 1.13.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html

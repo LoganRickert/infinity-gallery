@@ -41,6 +41,7 @@ function infinity_gallery_render_callback($attributes)
     $images = $attributes['images'];
     $imageSize = sanitize_text_field($attributes['imageSize'] ?? 'large');
     $maxPerRow = intval($attributes['maxPerRow'] ?? 4);
+    $padding = intval($attributes['padding'] ?? 20);
     $gutterSize = intval($attributes['gutterSize'] ?? 10);
     $cropImages = boolval($attributes['cropImages'] ?? false);
     $cropImageHeight = intval($attributes['cropImageHeight'] ?? 250);
@@ -66,7 +67,7 @@ function infinity_gallery_render_callback($attributes)
     ob_start();
 ?>
     <div class="infinity-gallery infinity-gallery-<?php echo esc_attr($gallery_uid); ?>" id="<?php echo esc_attr($gallery_id); ?>"
-        style="--crop-image-height: <?php echo esc_attr($cropImageHeight); ?>px; --gutter-size: <?php echo esc_attr($gutterSize); ?>px"
+        style="--crop-image-height: <?php echo esc_attr($cropImageHeight); ?>px; --gutter-size: <?php echo esc_attr($gutterSize); ?>px; padding: <?php echo esc_attr($padding); ?>px"
         data-gallery-id="<?php echo esc_attr($gallery_id) ?>"
         data-max-per-row="<?php echo esc_attr($maxPerRow); ?>"
         data-gutter-size="<?php echo esc_attr($gutterSize); ?>"
