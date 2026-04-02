@@ -22,7 +22,7 @@
     "exif-js": "^2.3.0",
     "file-saver": "^2.0.5",
     "intersection-observer": "^0.12.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
 	"browserslist": [
 		"last 3 versions",
